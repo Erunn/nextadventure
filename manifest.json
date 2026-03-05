@@ -1,7 +1,7 @@
 {
   "name": "Our Next Adventure",
   "short_name": "Adventure",
-  "start_url": "/nextadventure/",
+  "start_url": "/ournextadventure/",
   "display": "standalone",
   "background_color": "#1a1d23",
   "theme_color": "#1a1d23",
