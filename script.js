@@ -1,17 +1,16 @@
 const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json";
 
 async function initTimer() {
-    // Fail-safe: if DB takes > 5s, show default state
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
     try {
-        const response = await fetch(`${DB_URL}?nocache=${Date.now()}`, { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         
-        if (!data) throw new Error("No data");
+        if (!data) {
+            showFallback();
+            return;
+        }
 
+        // 1. Sync Tab and Title
         document.title = data.shareTitle || "Next Adventure";
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
@@ -19,6 +18,7 @@ async function initTimer() {
         document.getElementById("event-name").innerHTML = 
             `${data.eventName || "Next Adventure"} <span>${emojiChar}</span>`;
 
+        // 2. Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
         const noTimerEl = document.getElementById("description-display");
         
@@ -34,9 +34,19 @@ async function initTimer() {
             }
         }
     } catch (e) { 
-        console.error("Timer load failed:", e);
-        // Fallback to prevent "Loading..." hang
-        document.getElementById("event-name").innerText = "Next Adventure ❤️";
+        console.error("Connection error:", e);
+        showFallback();
+    }
+}
+
+// FIX: Ensure "Loading..." is removed even on total failure
+function showFallback() {
+    const eventName = document.getElementById("event-name");
+    if (eventName) eventName.innerText = "Next Adventure ❤️";
+    const noTimerEl = document.getElementById("description-display");
+    if (noTimerEl) {
+        noTimerEl.style.display = "block";
+        noTimerEl.innerText = "Check back soon for updates.";
     }
 }
 
@@ -60,5 +70,4 @@ function startCountdown(dateStr, msg) {
         }
 
         const d = Math.floor(dist / 86400000);
-        const h = Math.floor((dist % 86400000) / 3600000);
-        const m = Math.floor((dist % 3600000) /
+        const h = Math.floor((dist % 8640
