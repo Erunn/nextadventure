@@ -2,7 +2,6 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        // Cache Buster for mobile refresh
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         if (!data) return;
@@ -18,12 +17,11 @@ async function initTimer() {
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
         if (showTimer && data.targetDate) {
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            hideTimer(data.celebrationMessage);
+            hideTimer(data.description || data.celebrationMessage);
         }
     } catch (e) { console.error(e); }
 }
@@ -59,7 +57,6 @@ function updateUnit(id, value) {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerText = value.toString().padStart(2, '0');
-    // Dimming logic
     if (value === 0) el.classList.add("is-due");
     else el.classList.remove("is-due");
 }
@@ -68,37 +65,29 @@ function hideTimer(msg) {
     document.getElementById("countdown").style.display = "none";
     document.getElementById("full-date-display").style.display = "none";
     const s = document.getElementById("status-message");
-    s.style.display = "block";
-    s.innerText = msg || "Adventure Starts! ✨";
+    if (s) {
+        s.style.display = "block";
+        s.innerText = msg || "Adventure Starts! ✨";
+    }
 }
 
-// Fixed Theme Switch Logic
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
 });
 
-// UPATED Randomizer Logic for 7 Images
 window.onload = () => {
     initTimer();
     const roll = Math.random();
     
-    // Each case has a 14.28% chance (1/7)
-    if (roll < 0.14) {
-        showSuri('suri-1');
-    } else if (roll < 0.28) {
-        showSuri('suri-2');
-    } else if (roll < 0.42) {
-        showSuri('suri-3');
-    } else if (roll < 0.56) {
-        showSuri('suri-4'); // New Image
-    } else if (roll < 0.70) {
-        showSuri('suri-5'); // New Image
-    } else if (roll < 0.84) {
-        showSuri('suri-6'); // New Image
-    } else {
-        showSuri('suri-7'); // New Image
-    }
+    // Equal 14.28% chance for 7 images
+    if (roll < 0.14) showSuri('suri-1');
+    else if (roll < 0.28) showSuri('suri-2');
+    else if (roll < 0.42) showSuri('suri-3');
+    else if (roll < 0.56) showSuri('suri-4');
+    else if (roll < 0.70) showSuri('suri-5');
+    else if (roll < 0.84) showSuri('suri-6');
+    else showSuri('suri-7');
 
     if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 };
@@ -108,7 +97,7 @@ function showSuri(img) {
     if (p) {
         const c = document.createElement('div');
         c.className = `cat-image ${img}`;
-        p.innerHTML = ''; // Clear previous cat if necessary
+        p.innerHTML = ''; 
         p.appendChild(c);
         setTimeout(() => p.style.opacity = "1", 500);
     }
