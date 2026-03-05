@@ -25,17 +25,12 @@ body.light-mode {
 /* FIX: Light mode border visibility */
 body.light-mode .timer-container { 
     background: rgba(255, 255, 255, 0.85); 
-    border: 1.5px solid rgba(0, 0, 0, 0.2); 
+    border: 2px solid rgba(0, 0, 0, 0.15); 
 }
 
 #countdown { display: flex; gap: 15px; justify-content: center; margin: 20px auto; }
 
-/* FIX: Dimming logic for past/due time */
-.time-box span.is-due { 
-    opacity: 0.25; 
-}
-
-.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2.2rem, 7vw, 4rem); display: block; line-height: 1; transition: opacity 0.5s ease; }
+.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2.2rem, 7vw, 4rem); display: block; line-height: 1; }
 .label { font-size: 0.75rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); }
 body.light-mode .label { color: #636e72 !important; font-weight: 500; }
 
@@ -47,7 +42,7 @@ body.light-mode .label { color: #636e72 !important; font-weight: 500; }
 .anim-takeoff { display: inline-block; animation: etakeoff 3s infinite ease-in-out; }
 @keyframes etakeoff { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(8px, -8px) rotate(-5deg); } }
 
-#description-display { font-size: 1.4rem; font-weight: 400; margin: 20px 0; line-height: 1.5; }
+#status-message { font-size: 1.4rem; font-weight: 400; margin: 20px 0; line-height: 1.5; }
 
 #theme-toggle {
     position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px;
@@ -58,6 +53,7 @@ body.light-mode .label { color: #636e72 !important; font-weight: 500; }
 }
 body.light-mode #theme-toggle { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.3); }
 
+/* Cat Elements */
 #cat-perch { position: absolute; top: -85px; right: 20px; width: 120px; height: 120px; z-index: 15; opacity: 0; transition: opacity 1s ease; }
 .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom; }
 .suri-1 { background-image: url('suri1.png'); }
