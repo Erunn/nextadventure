@@ -12,21 +12,18 @@ function showSuri(imageClass) {
 function createPawTrack() {
     const container = document.getElementById('cat-encounter-container');
     if (!container) return;
-    const numSteps = 10; 
     let x = Math.random() * (window.innerWidth - 100);
     let y = Math.random() * (window.innerHeight - 100);
     let angle = Math.random() * 360; 
-    const stepLength = 70; 
 
-    for (let i = 0; i < numSteps; i++) {
+    for (let i = 0; i < 10; i++) {
         setTimeout(() => {
             const paw = document.createElement('div');
             paw.className = 'paw-print';
             const side = i % 2 === 0 ? 1 : -1;
             const moveAngle = angle * (Math.PI / 180);
-            const sideAngle = (angle + 90 * side) * (Math.PI / 180);
-            const finalX = x + (i * stepLength * Math.cos(moveAngle)) + (20 * Math.cos(sideAngle));
-            const finalY = y + (i * stepLength * Math.sin(moveAngle)) + (20 * Math.sin(sideAngle));
+            const finalX = x + (i * 70 * Math.cos(moveAngle)) + (20 * Math.cos((angle + 90 * side) * (Math.PI / 180)));
+            const finalY = y + (i * 70 * Math.sin(moveAngle)) + (20 * Math.sin((angle + 90 * side) * (Math.PI / 180)));
             paw.style.left = `${finalX}px`;
             paw.style.top = `${finalY}px`;
             paw.style.setProperty('--rot', `${angle + 90}deg`);
@@ -40,63 +37,48 @@ async function initTimer() {
     try {
         const response = await fetch(DB_URL);
         const data = await response.json();
-        if (!data) return;
+        
+        // Update Title/Meta from Firebase
+        document.title = data.shareTitle || "Next Adventure";
+        document.getElementById("og-title")?.setAttribute("content", data.shareTitle || "Next Adventure");
+        document.getElementById("meta-desc")?.setAttribute("content", data.metaDescription || "A personal countdown.");
 
-        // Syncing with your Firebase fields
-        const sTitle = data.shareTitle || "Our Next Adventure";
-        const mDesc = data.metaDescription || "A personal countdown.";
-        document.title = sTitle;
-        document.getElementById("og-title").setAttribute("content", sTitle);
-        document.getElementById("meta-desc").setAttribute("content", mDesc);
+        const eventNameEl = document.getElementById("event-name");
+        eventNameEl.innerHTML = `${data.eventName || "Next Adventure"} ❤️`;
 
-        let currentEventName = data.eventName || "Next Adventure";
-        const emojiKey = (data.emoji || "heart").toLowerCase();
-        let currentEmoji = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
-        document.getElementById("event-name").innerHTML = `${currentEventName} <span class="anim-bounce">${currentEmoji}</span>`;
-
-        if (Number(data.useTimer) === 1 && data.targetDate) {
-            document.getElementById("countdown").style.display = "flex";
+        if (data.targetDate) {
             const parts = data.targetDate.split(/[-/ :]/);
-            const targetTime = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0, parts[5]||0).getTime();
-            
-            const x = setInterval(() => {
-                const distance = targetTime - new Date().getTime();
-                const d = Math.floor(distance / 86400000);
-                const h = Math.floor((distance % 86400000) / 3600000);
-                const m = Math.floor((distance % 3600000) / 60000);
-                const s = Math.floor((distance % 60000) / 1000);
+            const target = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0).getTime();
+            document.getElementById("countdown").style.display = "flex";
 
-                document.getElementById("days").innerText = d.toString().padStart(2, '0');
-                document.getElementById("hours").innerText = h.toString().padStart(2, '0');
-                document.getElementById("minutes").innerText = m.toString().padStart(2, '0');
-                document.getElementById("seconds").innerText = s.toString().padStart(2, '0');
+            setInterval(() => {
+                const now = new Date().getTime();
+                const dist = target - now;
+                if (dist < 0) return;
 
-                if (distance < 0) {
-                    clearInterval(x);
-                    document.getElementById("countdown").style.display = "none";
-                    document.getElementById("status-message").style.display = "block";
-                    document.getElementById("status-message").innerText = data.celebrationMessage || "The moment is here! ✨";
-                }
+                document.getElementById("days").innerText = Math.floor(dist / 86400000).toString().padStart(2, '0');
+                document.getElementById("hours").innerText = Math.floor((dist % 86400000) / 3600000).toString().padStart(2, '0');
+                document.getElementById("minutes").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2, '0');
+                document.getElementById("seconds").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2, '0');
             }, 1000);
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Database failed", e); }
 }
 
-const btn = document.getElementById('theme-toggle');
-if (btn) {
-    btn.addEventListener('click', () => {
+const themeBtn = document.getElementById('theme-toggle');
+if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
     });
 }
 
-// 25% Random Chance for each encounter
-window.addEventListener('load', () => {
+// 25% Encounter Chance
+window.onload = () => {
+    initTimer();
     const roll = Math.random();
     if (roll < 0.25) showSuri('suri-1');
-    else if (roll < 0.50) showSuri('suri-2');
+    else if (roll < 0.5) showSuri('suri-2');
     else if (roll < 0.75) showSuri('suri-3');
     else { createPawTrack(); setInterval(createPawTrack, 30000); }
-});
-
-initTimer();
+};
