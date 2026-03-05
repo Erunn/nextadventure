@@ -7,8 +7,9 @@
     <title>Next Adventure</title>
     <link rel="manifest" href="manifest.json">
     <script>
-        var cb = new Date().getTime();
-        document.write('<link rel="stylesheet" href="style.css?v=' + cb + '">');
+        // Cache Buster for CSS: Tricks mobile browsers into downloading the newest version
+        var v = new Date().getTime();
+        document.write('<link rel="stylesheet" href="style.css?v=' + v + '">');
     </script>
 </head>
 <body>
@@ -34,6 +35,9 @@
         <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
 
-    <script>document.write('<script src="script.js?v=' + cb + '"><\/script>');</script>
+    <script>
+        // Cache Buster for JS
+        document.write('<script src="script.js?v=' + v + '"><\/script>');
+    </script>
 </body>
 </html>
