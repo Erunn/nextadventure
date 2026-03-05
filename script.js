@@ -1,20 +1,14 @@
 const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json";
 
 async function initTimer() {
-    // Fail-safe: Force-remove "Loading..." if nothing happens in 3s
-    const fallbackTimeout = setTimeout(() => {
-        const titleEl = document.getElementById("event-name");
-        if (titleEl && titleEl.innerText === "Loading...") {
-            titleEl.innerText = "Next Adventure ❤️";
-        }
-    }, 3000);
-
     try {
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         
-        if (!data) throw new Error("No data");
-        clearTimeout(fallbackTimeout);
+        if (!data) {
+            showFallback();
+            return;
+        }
 
         document.title = data.shareTitle || "Next Adventure";
         const emojiKey = (data.emoji || "heart").toLowerCase();
@@ -36,11 +30,29 @@ async function initTimer() {
                 noTimerEl.style.display = "block";
                 noTimerEl.innerText = data.noTimerMessage || "Our next adventure is coming soon.";
             }
+            // Reveal immediately since no countdown calculation is needed
+            revealUI();
         }
     } catch (e) { 
         console.error("Connection error:", e);
-        document.getElementById("event-name").innerText = "Next Adventure ❤️";
+        showFallback();
     }
+}
+
+function revealUI() {
+    const container = document.querySelector(".timer-container");
+    if (container) container.classList.add("reveal");
+}
+
+function showFallback() {
+    const eventName = document.getElementById("event-name");
+    if (eventName) eventName.innerText = "Next Adventure ❤️";
+    const noTimerEl = document.getElementById("description-display");
+    if (noTimerEl) {
+        noTimerEl.style.display = "block";
+        noTimerEl.innerText = "Check back soon for updates.";
+    }
+    revealUI();
 }
 
 function startCountdown(dateStr, msg) {
@@ -54,11 +66,15 @@ function startCountdown(dateStr, msg) {
         fd.style.display = "block";
     }
 
+    // Reveal the UI as soon as the first calculation is ready
+    let firstRun = true;
+
     const x = setInterval(() => {
         const dist = target - new Date().getTime();
         if (dist <= 0) {
             clearInterval(x);
             hideTimer(msg);
+            if (firstRun) revealUI();
             return;
         }
 
@@ -77,13 +93,17 @@ function startCountdown(dateStr, msg) {
         if(mEl) mEl.innerText = m.toString().padStart(2, '0');
         if(sEl) sEl.innerText = s.toString().padStart(2, '0');
 
-        // Cascading Dimming
         if (d === 0) dEl.classList.add("is-due"); else dEl.classList.remove("is-due");
         if (d === 0 && h === 0) hEl.classList.add("is-due"); else hEl.classList.remove("is-due");
         if (d === 0 && h === 0 && m === 0) mEl.classList.add("is-due"); else mEl.classList.remove("is-due");
         sEl.classList.remove("is-due");
 
         document.getElementById("countdown").style.display = "flex";
+        
+        if (firstRun) {
+            revealUI();
+            firstRun = false;
+        }
     }, 1000);
 }
 
@@ -92,7 +112,14 @@ function hideTimer(msg) {
     document.getElementById("full-date-display").style.display = "none";
     const s = document.getElementById("status-message");
     if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
+    revealUI();
 }
+
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
+});
 
 function updateThemeIcons(isLight) {
     const sun = document.getElementById('sun-icon');
@@ -105,12 +132,6 @@ function updateThemeIcons(isLight) {
         if (moon) moon.style.display = 'block';
     }
 }
-
-document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    updateThemeIcons(isLight);
-});
 
 window.onload = () => {
     initTimer();
