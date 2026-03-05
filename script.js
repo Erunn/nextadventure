@@ -50,66 +50,25 @@ function startCountdown(dateStr, msg) {
             return;
         }
 
-        document.getElementById("countdown").style.display = "flex";
-        updateUnit("days", Math.floor(dist / 86400000));
-        updateUnit("hours", Math.floor((dist % 86400000) / 3600000));
-        updateUnit("minutes", Math.floor((dist % 3600000) / 60000));
-        updateUnit("seconds", Math.floor((dist % 60000) / 1000));
-    }, 1000);
-}
+        const d = Math.floor(dist / 86400000);
+        const h = Math.floor((dist % 86400000) / 3600000);
+        const m = Math.floor((dist % 3600000) / 60000);
+        const s = Math.floor((dist % 60000) / 1000);
 
-function updateUnit(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerText = value.toString().padStart(2, '0');
-    if (value === 0) el.classList.add("is-due");
-    else el.classList.remove("is-due");
-}
+        const dEl = document.getElementById("days");
+        const hEl = document.getElementById("hours");
+        const mEl = document.getElementById("minutes");
+        const sEl = document.getElementById("seconds");
 
-function hideTimer(msg) {
-    document.getElementById("countdown").style.display = "none";
-    document.getElementById("full-date-display").style.display = "none";
-    const s = document.getElementById("status-message");
-    if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
-}
+        // Display the numbers
+        dEl.innerText = d.toString().padStart(2, '0');
+        hEl.innerText = h.toString().padStart(2, '0');
+        mEl.innerText = m.toString().padStart(2, '0');
+        sEl.innerText = s.toString().padStart(2, '0');
 
-function updateThemeIcons(isLight) {
-    const sun = document.getElementById('sun-icon');
-    const moon = document.getElementById('moon-icon');
-    if (isLight) {
-        if (sun) sun.style.display = 'block';
-        if (moon) moon.style.display = 'none';
-    } else {
-        if (sun) sun.style.display = 'none';
-        if (moon) moon.style.display = 'block';
-    }
-}
-
-document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    updateThemeIcons(isLight);
-});
-
-window.onload = () => {
-    initTimer();
-    const roll = Math.random();
-    const suriIndex = Math.floor(roll * 7) + 1;
-    showSuri(`suri-${suriIndex}`);
-
-    const savedTheme = localStorage.getItem('theme');
-    const isLight = savedTheme === 'light';
-    if (isLight) document.body.classList.add('light-mode');
-    updateThemeIcons(isLight);
-};
-
-function showSuri(img) {
-    const p = document.getElementById('cat-perch');
-    if (p) {
-        const c = document.createElement('div');
-        c.className = `cat-image ${img}`;
-        p.innerHTML = ''; 
-        p.appendChild(c);
-        setTimeout(() => p.style.opacity = "1", 500);
-    }
-}
+        // FIXED: Cascade Dimming Logic
+        // Days dim if 0
+        if (d === 0) dEl.classList.add("is-due"); else dEl.classList.remove("is-due");
+        
+        // Hours dim ONLY if 0 AND Days are 0
+        if (d === 0 && h === 0) hEl.classList.add("is-due"); else hEl
