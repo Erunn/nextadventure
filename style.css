@@ -1,10 +1,33 @@
-/* The Container for the cat sitting on the box */
+body {
+    background-color: #1a1d23;
+    background-image: radial-gradient(circle at top, #282c34, #1a1d23);
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s ease;
+    overflow: hidden;
+}
+
+.timer-container {
+    position: relative; text-align: center; padding: 60px 20px; 
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px;
+    width: 90%; max-width: 900px; animation: fadeIn 1.2s ease-out;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* The Perch for your Suri images */
 #cat-perch {
     position: absolute;
-    top: -60px; /* Adjusted so the cat sits on the top edge */
+    top: -65px; 
     right: 30px;
-    width: 110px; 
-    height: 80px;
+    width: 120px; 
+    height: 90px;
     z-index: 15;
     pointer-events: none;
     opacity: 0;
@@ -19,11 +42,33 @@
     background-position: bottom center;
 }
 
-/* Specific background images for your 3 uploads */
+/* Mapping CSS classes to your file names */
 .suri-1 { background-image: url('suri1.png'); }
 .suri-2 { background-image: url('suri2.png'); }
 .suri-3 { background-image: url('suri3.png'); }
 
-/* Ensure paws still look right in both modes */
+/* Walking Paws logic */
+#cat-encounter-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+.paw-print {
+    position: absolute; width: 50px; height: 50px; 
+    background-color: rgba(255, 255, 255, 0.55);
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,18c-1.5,0-3-0.5-3.5-1.5c-0.5-1,0-2.5,1-3.5c1-1,2.5-1.5,4.5-1.5s3.5,0.5,4.5,1.5c1,1,1.5,2.5,1,3.5C19,17.5,17.5,18,16,18H12z M7,11c-0.8,0-1.5-0.7-1.5-1.5S6.2,8,7,8s1.5,0.7,1.5,1.5S7.8,11,7,11z M10,7c-0.8,0-1.5-0.7-1.5-1.5S9.2,4,10,4s1.5,0.7,1.5,1.5S10.8,7,10,7z M15,7c0.8,0,1.5-0.7,1.5-1.5S15.8,4,15,4s-1.5,0.7-1.5,1.5S14.2,7,15,7z M18,11c0.8,0,1.5-0.7,1.5-1.5S18.8,8,18,8s-1.5,0.7-1.5,1.5S17.2,11,18,11z"/></svg>') no-repeat center;
+    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,18c-1.5,0-3-0.5-3.5-1.5c-0.5-1,0-2.5,1-3.5c1-1,2.5-1.5,4.5-1.5s3.5,0.5,4.5,1.5c1,1,1.5,2.5,1,3.5C19,17.5,17.5,18,16,18H12z M7,11c-0.8,0-1.5-0.7-1.5-1.5S6.2,8,7,8s1.5,0.7,1.5,1.5S7.8,11,7,11z M10,7c-0.8,0-1.5-0.7-1.5-1.5S9.2,4,10,4s1.5,0.7,1.5,1.5S10.8,7,10,7z M15,7c0.8,0,1.5-0.7,1.5-1.5S15.8,4,15,4s-1.5,0.7-1.5,1.5S14.2,7,15,7z M18,11c0.8,0,1.5-0.7,1.5-1.5S18.8,8,18,8s-1.5,0.7-1.5,1.5S17.2,11,18,11z"/></svg>') no-repeat center;
+    opacity: 0; filter: blur(0.2px);
+    animation: pawFade 7s ease-in-out forwards;
+}
+
+/* Typography & Layout centering fix */
+h1 { font-weight: 500; letter-spacing: -0.03em; margin-bottom: 40px; font-size: 2.2rem; }
+#countdown { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin: 0 auto; }
+.time-box { text-align: center; min-width: 90px; }
+.time-box span { font-family: 'SF Mono', monospace; font-size: 4.2rem; display: block; line-height: 1; margin-bottom: 8px; }
+.label { font-size: 0.75rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.3); }
+
+/* Theme Overrides */
+body.light-mode { background-color: #f0f2f5; color: #2d3436; }
+body.light-mode .timer-container { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.05); }
 body.light-mode .paw-print { background-color: rgba(0, 0, 0, 0.6); }
-body.dark-mode .paw-print { background-color: rgba(255, 255, 255, 0.55); }
+body.light-mode .label { color: rgba(0, 0, 0, 0.7) !important; font-weight: 500; }
+
+@keyframes pawFade { 0% { opacity: 0; transform: scale(0.85) rotate(var(--rot)); } 15% { opacity: 1; transform: scale(1
