@@ -14,8 +14,8 @@ async function initTimer() {
         if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
         else if (emojiKey === "plane") anim = "anim-takeoff";
 
-        const nameEl = document.getElementById("event-name");
-        if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
+        document.getElementById("event-name").innerHTML = 
+            `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
         const showTimer = Number(data.useTimer) === 1;
         if (showTimer && data.targetDate) {
@@ -65,22 +65,31 @@ function hideTimer(msg) {
     document.getElementById("countdown").style.display = "none";
     document.getElementById("full-date-display").style.display = "none";
     const s = document.getElementById("status-message");
-    if (s) {
-        s.style.display = "block";
-        s.innerText = msg || "Adventure Starts! ✨";
+    if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
+}
+
+// NEW: Updated Theme Toggle with Icon Sync
+function updateThemeIcons(isLight) {
+    const sun = document.getElementById('sun-icon');
+    const moon = document.getElementById('moon-icon');
+    if (isLight) {
+        sun.style.display = 'block';
+        moon.style.display = 'none';
+    } else {
+        sun.style.display = 'none';
+        moon.style.display = 'block';
     }
 }
 
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const light = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', light ? 'light' : 'dark');
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
 });
 
 window.onload = () => {
     initTimer();
     const roll = Math.random();
-    
-    // Equal 14.28% chance for 7 images
     if (roll < 0.14) showSuri('suri-1');
     else if (roll < 0.28) showSuri('suri-2');
     else if (roll < 0.42) showSuri('suri-3');
@@ -89,7 +98,13 @@ window.onload = () => {
     else if (roll < 0.84) showSuri('suri-6');
     else showSuri('suri-7');
 
-    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        updateThemeIcons(true);
+    } else {
+        updateThemeIcons(false);
+    }
 };
 
 function showSuri(img) {
