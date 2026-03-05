@@ -6,7 +6,7 @@ async function initTimer() {
         const data = await response.json();
         if (!data) return;
 
-        // 1. FIX: Sync Browser Tab Title with 'shareTitle'
+        // 1. FIX: Sync Tab Name with 'shareTitle'
         const finalTitle = data.shareTitle || "Next Adventure";
         document.title = finalTitle; 
         const og = document.getElementById("og-title");
@@ -45,7 +45,6 @@ function startCountdown(dateStr, msg) {
     const parts = dateStr.split(/[-/ :]/);
     const target = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0).getTime();
     
-    // Set text date display
     const fd = document.getElementById("full-date-display");
     if (fd) {
         fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -61,7 +60,7 @@ function startCountdown(dateStr, msg) {
         const sEl = document.getElementById("seconds");
 
         if (dist <= 0) {
-            // FIX: If time is up, dim all units
+            // FIX: Dim all units when time is up
             [dEl, hEl, mEl, sEl].forEach(el => { if(el) { el.innerText = "00"; el.classList.add("is-due"); } });
             clearInterval(x);
             const s = document.getElementById("status-message");
@@ -83,7 +82,6 @@ function startCountdown(dateStr, msg) {
     }, 1000);
 }
 
-// Randomizer and Theme Setup
 window.onload = () => {
     initTimer();
     const roll = Math.random();
@@ -94,10 +92,10 @@ window.onload = () => {
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateUI(isLight);
+    updateThemeUI(isLight);
 };
 
-function updateUI(light) {
+function updateThemeUI(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -107,7 +105,7 @@ function updateUI(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateUI(light);
+    updateThemeUI(light);
 });
 
 function showSuri(img) {
