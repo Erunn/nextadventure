@@ -2,39 +2,36 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        // Cache Buster ensures the pull-to-refresh gets NEW data
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         if (!data) return;
 
-        // 1. Map emojis (Heart, Bus, Plane, Train) to animations
+        // 1. Set Emoji and Animation
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
         
-        let anim = "anim-bounce"; // Heart
-        if (emojiKey === "bus" || emojiKey === "train") {
-            anim = "anim-drive";
-        } else if (emojiKey === "plane") {
-            anim = "anim-takeoff";
-        }
+        let anim = "anim-bounce";
+        if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
+        else if (emojiKey === "plane") anim = "anim-takeoff";
 
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // 2. useTimer Switch Logic
+        // 2. Fix Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
-        const cdEl = document.getElementById("countdown");
-        const dsEl = document.getElementById("description-display");
+        const countdownEl = document.getElementById("countdown");
+        const descEl = document.getElementById("description-display");
 
         if (showTimer && data.targetDate) {
-            if (cdEl) cdEl.style.display = "flex";
-            if (dsEl) dsEl.style.display = "none";
+            // Force the timer to show as flex
+            if (countdownEl) countdownEl.style.setProperty("display", "flex", "important");
+            if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            if (cdEl) cdEl.style.display = "none";
-            if (dsEl) {
-                dsEl.style.display = "block";
-                dsEl.innerText = data.description || "Coming soon!";
+            if (countdownEl) countdownEl.style.display = "none";
+            if (descEl) {
+                descEl.style.display = "block";
+                descEl.innerText = data.description || "Coming soon!";
             }
         }
     } catch (e) { console.error(e); }
@@ -66,7 +63,7 @@ function startCountdown(dateStr, msg) {
     }, 1000);
 }
 
-// Fixed Randomizer Logic
+// Randomizer and Theme Setup
 window.onload = () => {
     initTimer();
     const roll = Math.random();
@@ -77,10 +74,10 @@ window.onload = () => {
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateThemeUI(isLight);
+    updateUI(isLight);
 };
 
-function updateThemeUI(light) {
+function updateUI(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -90,7 +87,7 @@ function updateThemeUI(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateThemeUI(light);
+    updateUI(light);
 });
 
 function showSuri(img) {
