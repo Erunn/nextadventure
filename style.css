@@ -1,11 +1,11 @@
 body {
-    background-color: #121417; /* Deeper dark mode */
+    background-color: #121417;
     background-image: radial-gradient(circle at top, #1c1f26, #121417);
     color: #ffffff;
     font-family: -apple-system, "Inter", sans-serif;
     display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
     transition: background-color 0.5s ease;
-    overflow-x: hidden; overscroll-behavior-y: contain; 
+    overflow: hidden; overscroll-behavior-y: contain; 
 }
 
 body.light-mode {
@@ -16,13 +16,11 @@ body.light-mode {
 
 .timer-container {
     position: relative; text-align: center; width: 90%; max-width: 500px;
-    padding: 40px 20px; z-index: 10;
+    padding: 20px; z-index: 10;
 }
 
-/* Minimalist Title */
 h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom: 30px; }
 
-/* The Timer: Clean & Spacious */
 #countdown { 
     display: flex; justify-content: space-around; align-items: center; 
     margin: 40px auto; gap: 10px; 
@@ -36,7 +34,6 @@ h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom
     transition: opacity 0.4s ease;
 }
 
-/* Dimming Logic */
 .time-box span.is-due { opacity: 0.15; }
 
 .label { 
@@ -44,6 +41,25 @@ h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom
     margin-top: 10px; color: rgba(255, 255, 255, 0.3); 
 }
 body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
+
+/* Minimalist Date Display style */
+#full-date-display {
+    margin-top: 25px;
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    opacity: 0.6;
+}
+
+#cat-perch { 
+    position: fixed; bottom: 20px; left: 20px; 
+    width: 100px; height: 100px; z-index: 15; 
+    opacity: 0; transition: opacity 1s ease; 
+}
+.cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
+.suri-1 { background-image: url('suri1.png'); }
+.suri-2 { background-image: url('suri2.png'); }
+.suri-3 { background-image: url('suri3.png'); }
 
 /* Travel Animations */
 .anim-bounce { display: inline-block; animation: ebounce 2.5s infinite ease-in-out; }
@@ -53,12 +69,10 @@ body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
 .anim-takeoff { display: inline-block; animation: etakeoff 4s infinite ease-in-out; }
 @keyframes etakeoff { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(10px, -10px) rotate(-5deg); } }
 
-/* Ultra-minimal Toggle */
 #theme-toggle {
     position: fixed; bottom: 30px; right: 30px; border: none; background: none;
-    cursor: pointer; opacity: 0.3; transition: opacity 0.3s; color: inherit;
+    cursor: pointer; opacity: 0.3; transition: opacity 0.3s; color: inherit; font-size: 0.8rem;
 }
 #theme-toggle:hover { opacity: 1; }
 
-/* Past Date/Status Text */
 #status-message { font-weight: 300; font-size: 1.1rem; opacity: 0.8; margin-top: 20px; }
