@@ -2,55 +2,43 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        // Cache Buster: Appends timestamp so mobile browsers force a fresh fetch
+        // Cache Buster for Data: Forces mobile to grab NEW database values every refresh
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         if (!data) return;
 
-        // 1. Sync Titles
-        document.title = data.shareTitle || "Next Adventure";
-        const og = document.getElementById("og-title");
-        if (og) og.setAttribute("content", data.shareTitle || "Adventure");
-
-        // 2. Emoji Animation Logic - FIXED
+        // 1. Emoji & Unique Animation
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
         
-        let animClass = "anim-bounce"; // Default
+        let anim = "anim-bounce"; // Default
         switch(emojiKey) {
-            case 'star': animClass = "anim-pulse"; break;
-            case 'sparkles': animClass = "anim-wiggle"; break;
-            case 'cloud': animClass = "anim-float"; break;
-            case 'sun': animClass = "anim-float"; break; 
+            case 'star': anim = "anim-pulse"; break;
+            case 'sparkles': anim = "anim-wiggle"; break;
+            case 'cloud': anim = "anim-float"; break;
+            case 'sun': anim = "anim-float"; break; 
         }
 
         const nameEl = document.getElementById("event-name");
-        if (nameEl) {
-            nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${animClass}">${emojiChar}</span>`;
-        }
+        if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // 3. useTimer Switch Logic
+        // 2. useTimer Switch Logic
         const showTimer = Number(data.useTimer) === 1;
-        const countdownEl = document.getElementById("countdown");
-        const descEl = document.getElementById("description-display");
+        const cdEl = document.getElementById("countdown");
+        const dsEl = document.getElementById("description-display");
 
         if (showTimer && data.targetDate) {
-            if (countdownEl) countdownEl.style.display = "flex";
-            if (descEl) descEl.style.display = "none";
+            if (cdEl) cdEl.style.display = "flex";
+            if (dsEl) dsEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            if (countdownEl) countdownEl.style.display = "none";
-            if (descEl) {
-                descEl.style.display = "block";
-                // Specifically pulling the 'description' field from Firebase
-                descEl.innerText = data.description || "Our next adventure is coming soon.";
+            if (cdEl) cdEl.style.display = "none";
+            if (dsEl) {
+                dsEl.style.display = "block";
+                dsEl.innerText = data.description || "Coming soon!";
             }
         }
-    } catch (e) { 
-        console.error("Fetch Error:", e);
-        const nameEl = document.getElementById("event-name");
-        if (nameEl) nameEl.innerText = "Next Adventure ❤️";
-    }
+    } catch (e) { console.error(e); }
 }
 
 function startCountdown(dateStr, msg) {
@@ -88,22 +76,17 @@ function startCountdown(dateStr, msg) {
 window.onload = () => {
     initTimer();
     const roll = Math.random();
-    
     if (roll < 0.25) showSuri('suri-1');
     else if (roll < 0.50) showSuri('suri-2');
     else if (roll < 0.75) showSuri('suri-3');
-    else {
-        // This ensures paws ALWAYS show if a suri image doesn't
-        createPawTrack();
-        setInterval(createPawTrack, 25000);
-    }
+    else { createPawTrack(); setInterval(createPawTrack, 25000); }
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateIcons(isLight);
+    updateThemeUI(isLight);
 };
 
-function updateIcons(light) {
+function updateThemeUI(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -113,7 +96,7 @@ function updateIcons(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateIcons(light);
+    updateThemeUI(light);
 });
 
 function showSuri(img) {
@@ -136,9 +119,8 @@ function createPawTrack() {
             const paw = document.createElement('div');
             paw.className = 'paw-print';
             const side = i % 2 === 0 ? 1 : -1;
-            const moveAngle = angle * (Math.PI / 180);
-            const finalX = x + (i * 70 * Math.cos(moveAngle)) + (20 * Math.cos((angle + 90 * side) * Math.PI / 180));
-            const finalY = y + (i * 70 * Math.sin(moveAngle)) + (20 * Math.sin((angle + 90 * side) * Math.PI / 180));
+            const finalX = x + (i * 70 * Math.cos(angle * Math.PI / 180)) + (20 * Math.cos((angle + 90 * side) * Math.PI / 180));
+            const finalY = y + (i * 70 * Math.sin(angle * Math.PI / 180)) + (20 * Math.sin((angle + 90 * side) * Math.PI / 180));
             paw.style.left = `${finalX}px`;
             paw.style.top = `${finalY}px`;
             paw.style.setProperty('--rot', `${angle + 90}deg`);
