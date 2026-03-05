@@ -38,9 +38,10 @@ async function initTimer() {
     }
 }
 
+// Master reveal for all synced elements
 function revealUI() {
-    const container = document.querySelector(".timer-container");
-    if (container) container.classList.add("reveal");
+    const targets = document.querySelectorAll(".sync-reveal");
+    targets.forEach(el => el.classList.add("reveal"));
 }
 
 function showFallback() {
@@ -91,10 +92,10 @@ function startCountdown(dateStr, msg) {
         if(mEl) mEl.innerText = m.toString().padStart(2, '0');
         if(sEl) sEl.innerText = s.toString().padStart(2, '0');
 
+        // Cascading dimming
         if (d === 0) dEl.classList.add("is-due"); else dEl.classList.remove("is-due");
         if (d === 0 && h === 0) hEl.classList.add("is-due"); else hEl.classList.remove("is-due");
         if (d === 0 && h === 0 && m === 0) mEl.classList.add("is-due"); else mEl.classList.remove("is-due");
-        sEl.classList.remove("is-due");
 
         document.getElementById("countdown").style.display = "flex";
         
@@ -150,6 +151,5 @@ function showSuri(img) {
         c.className = `cat-image ${img}`;
         p.innerHTML = ''; 
         p.appendChild(c);
-        // Removed the opacity delay since it's now nested
     }
 }
