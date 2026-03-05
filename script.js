@@ -30,7 +30,6 @@ async function initTimer() {
                 noTimerEl.style.display = "block";
                 noTimerEl.innerText = data.noTimerMessage || "Our next adventure is coming soon.";
             }
-            // Reveal immediately since no countdown calculation is needed
             revealUI();
         }
     } catch (e) { 
@@ -66,7 +65,6 @@ function startCountdown(dateStr, msg) {
         fd.style.display = "block";
     }
 
-    // Reveal the UI as soon as the first calculation is ready
     let firstRun = true;
 
     const x = setInterval(() => {
@@ -115,12 +113,6 @@ function hideTimer(msg) {
     revealUI();
 }
 
-document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    updateThemeIcons(isLight);
-});
-
 function updateThemeIcons(isLight) {
     const sun = document.getElementById('sun-icon');
     const moon = document.getElementById('moon-icon');
@@ -132,6 +124,12 @@ function updateThemeIcons(isLight) {
         if (moon) moon.style.display = 'block';
     }
 }
+
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
+});
 
 window.onload = () => {
     initTimer();
@@ -152,6 +150,6 @@ function showSuri(img) {
         c.className = `cat-image ${img}`;
         p.innerHTML = ''; 
         p.appendChild(c);
-        setTimeout(() => p.style.opacity = "1", 500);
+        // Removed the opacity delay since it's now nested
     }
 }
