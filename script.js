@@ -6,7 +6,7 @@ async function initTimer() {
         const data = await response.json();
         if (!data) return;
 
-        // 1. FIX: Sync Tab Name with 'shareTitle'
+        // 1. Sync Tab Name with 'shareTitle'
         const finalTitle = data.shareTitle || "Next Adventure";
         document.title = finalTitle; 
         const og = document.getElementById("og-title");
@@ -22,20 +22,18 @@ async function initTimer() {
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // 3. useTimer Switch Logic
+        // 3. Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
         const countdownEl = document.getElementById("countdown");
-        const descEl = document.getElementById("description-display");
+        const statusEl = document.getElementById("status-message");
 
         if (showTimer && data.targetDate) {
-            if (countdownEl) countdownEl.style.setProperty("display", "flex", "important");
-            if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
             if (countdownEl) countdownEl.style.display = "none";
-            if (descEl) {
-                descEl.style.display = "block";
-                descEl.innerText = data.description || "Our next adventure is coming soon.";
+            if (statusEl) {
+                statusEl.style.display = "block";
+                statusEl.innerText = data.celebrationMessage || "Adventure Starts! ✨";
             }
         }
     } catch (e) { console.error(e); }
@@ -44,44 +42,40 @@ async function initTimer() {
 function startCountdown(dateStr, msg) {
     const parts = dateStr.split(/[-/ :]/);
     const target = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0).getTime();
-    
-    const fd = document.getElementById("full-date-display");
-    if (fd) {
-        fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        fd.style.display = "block";
-    }
+    const countdownEl = document.getElementById("countdown");
+    const dateDisplay = document.getElementById("full-date-display");
+    const statusEl = document.getElementById("status-message");
 
     const x = setInterval(() => {
         const dist = target - new Date().getTime();
-        
-        const dEl = document.getElementById("days");
-        const hEl = document.getElementById("hours");
-        const mEl = document.getElementById("minutes");
-        const sEl = document.getElementById("seconds");
 
         if (dist <= 0) {
-            // FIX: Dim all units when time is up
-            [dEl, hEl, mEl, sEl].forEach(el => { if(el) { el.innerText = "00"; el.classList.add("is-due"); } });
+            // FIX: Hide timer and date if past
             clearInterval(x);
-            const s = document.getElementById("status-message");
-            if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
+            if (countdownEl) countdownEl.style.display = "none";
+            if (dateDisplay) dateDisplay.style.display = "none";
+            if (statusEl) {
+                statusEl.style.display = "block";
+                statusEl.innerText = msg || "The moment is here! ✨";
+            }
             return;
         }
 
-        const d = Math.floor(dist / 86400000);
-        const h = Math.floor((dist % 86400000) / 3600000);
-        const m = Math.floor((dist % 3600000) / 60000);
-        const s = Math.floor((dist % 60000) / 1000);
+        // Show elements while active
+        if (countdownEl) countdownEl.style.setProperty("display", "flex", "important");
+        if (dateDisplay) {
+            dateDisplay.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            dateDisplay.style.display = "block";
+        }
 
-        // FIX: Dim individual units as they reach zero
-        if (dEl) { dEl.innerText = d.toString().padStart(2, '0'); d === 0 ? dEl.classList.add("is-due") : dEl.classList.remove("is-due"); }
-        if (hEl) { hEl.innerText = h.toString().padStart(2, '0'); (d === 0 && h === 0) ? hEl.classList.add("is-due") : hEl.classList.remove("is-due"); }
-        if (mEl) { mEl.innerText = m.toString().padStart(2, '0'); (d === 0 && h === 0 && m === 0) ? mEl.classList.add("is-due") : mEl.classList.remove("is-due"); }
-        if (sEl) { sEl.innerText = s.toString().padStart(2, '0'); }
-
+        document.getElementById("days").innerText = Math.floor(dist / 86400000).toString().padStart(2, '0');
+        document.getElementById("hours").innerText = Math.floor((dist % 86400000) / 3600000).toString().padStart(2, '0');
+        document.getElementById("minutes").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2, '0');
+        document.getElementById("seconds").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2, '0');
     }, 1000);
 }
 
+// Randomizer and Theme Setup
 window.onload = () => {
     initTimer();
     const roll = Math.random();
@@ -92,10 +86,10 @@ window.onload = () => {
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateThemeUI(isLight);
+    updateUI(isLight);
 };
 
-function updateThemeUI(light) {
+function updateUI(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -105,7 +99,7 @@ function updateThemeUI(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateThemeUI(light);
+    updateUI(light);
 });
 
 function showSuri(img) {
