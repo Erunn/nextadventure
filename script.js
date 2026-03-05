@@ -10,12 +10,10 @@ async function initTimer() {
 
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
-        let anim = "anim-bounce";
-        if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
-        else if (emojiKey === "plane") anim = "anim-takeoff";
-
+        
+        // Removed all animation class assignment
         document.getElementById("event-name").innerHTML = 
-            `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
+            `${data.eventName || "Next Adventure"} <span>${emojiChar}</span>`;
 
         const showTimer = Number(data.useTimer) === 1;
         if (showTimer && data.targetDate) {
@@ -68,16 +66,15 @@ function hideTimer(msg) {
     if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
 }
 
-// NEW: Updated Theme Toggle with Icon Sync
 function updateThemeIcons(isLight) {
     const sun = document.getElementById('sun-icon');
     const moon = document.getElementById('moon-icon');
     if (isLight) {
-        sun.style.display = 'block';
-        moon.style.display = 'none';
+        if (sun) sun.style.display = 'block';
+        if (moon) moon.style.display = 'none';
     } else {
-        sun.style.display = 'none';
-        moon.style.display = 'block';
+        if (sun) sun.style.display = 'none';
+        if (moon) moon.style.display = 'block';
     }
 }
 
@@ -90,21 +87,14 @@ document.getElementById('theme-toggle')?.addEventListener('click', () => {
 window.onload = () => {
     initTimer();
     const roll = Math.random();
-    if (roll < 0.14) showSuri('suri-1');
-    else if (roll < 0.28) showSuri('suri-2');
-    else if (roll < 0.42) showSuri('suri-3');
-    else if (roll < 0.56) showSuri('suri-4');
-    else if (roll < 0.70) showSuri('suri-5');
-    else if (roll < 0.84) showSuri('suri-6');
-    else showSuri('suri-7');
+    const suriCount = 7;
+    const suriIndex = Math.floor(roll * suriCount) + 1;
+    showSuri(`suri-${suriIndex}`);
 
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-        updateThemeIcons(true);
-    } else {
-        updateThemeIcons(false);
-    }
+    const isLight = savedTheme === 'light';
+    if (isLight) document.body.classList.add('light-mode');
+    updateThemeIcons(isLight);
 };
 
 function showSuri(img) {
