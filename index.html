@@ -21,7 +21,11 @@
         .sync-reveal.reveal{opacity:1!important;transform:translateY(0) translateZ(0)}
         .timer-container{position:relative;text-align:center;width:90%;max-width:500px;padding:20px;z-index:10}
         h1{font-weight:600;letter-spacing:-.02em;font-size:clamp(1.8rem,6vw,2.2rem);margin-bottom:30px;text-transform:lowercase;min-height:1.2em}
-        #countdown{display:flex;justify-content:space-around;align-items:center;margin:40px auto;gap:8px;transition:opacity 0.4s ease}
+        
+        /* Updated: Margins push down into the timer to keep the flow clean */
+        #description-display,#full-date-display{margin-bottom:30px;font-size:1rem;font-weight:400;opacity:.7;line-height:1.6}
+        
+        #countdown{display:flex;justify-content:space-around;align-items:center;margin:0 auto 40px auto;gap:8px;transition:opacity 0.4s ease}
         .time-box span{font-family:'SF Mono','ui-monospace',monospace;font-size:clamp(2.2rem,8vw,3.5rem);font-weight:300;display:block;line-height:1;font-variant-numeric:tabular-nums;transition:all .4s ease;contain:content}
         .time-box span.is-due{opacity:.12;filter:blur(.5px);transform:scale(.92)}
         .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;margin-top:10px;color:rgba(255,255,255,.4);font-weight:500}
@@ -37,7 +41,6 @@
         .suri-5{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png')}
         .suri-6{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png')}
         .suri-7{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png')}
-        #description-display,#full-date-display{margin-top:25px;font-size:1rem;font-weight:400;opacity:.7;line-height:1.6}
     </style>
 </head>
 <body>
@@ -48,14 +51,15 @@
     </button>
     <main class="timer-container sync-reveal">
         <h1 id="event-name"></h1>
+        <div id="full-date-display" style="display:none;"></div>
+        <div id="description-display" style="display:none;"></div>
+        
         <div id="countdown" style="display:none;">
             <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
             <div class="time-box"><span id="hours">00</span><div class="label">hrs</div></div>
             <div class="time-box"><span id="minutes">00</span><div class="label">min</div></div>
             <div class="time-box"><span id="seconds">00</span><div class="label">sec</div></div>
         </div>
-        <div id="description-display" style="display:none;"></div>
-        <div id="full-date-display" style="display:none;"></div>
     </main>
     <script src="script.js" defer></script>
 </body>
