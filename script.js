@@ -6,11 +6,12 @@ const UI = {
     },
     
     init() {
-        setTimeout(() => this.reveal(), 3000);
-        this.preloadImages();
         this.renderSuri();
         this.initTheme();
         this.load();
+        // Add click listener for cat-perch
+        const perch = document.getElementById('cat-perch');
+        if (perch) perch.onclick = () => this.renderSuri();
     },
 
     preloadImages() {
@@ -25,8 +26,8 @@ const UI = {
             const d = await r.json();
             if (!d) throw 0;
 
-            const nameEl = document.getElementById("event-name");
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "❤️";
+            const nameEl = document.getElementById("event-name");
             if (nameEl) nameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
 
             if (Number(d.useTimer) === 1 && d.targetDate) {
@@ -35,7 +36,7 @@ const UI = {
                 this.showStatic(d.noTimerMessage);
             }
         } catch (e) {
-            this.showStatic("Next Adventure ❤️");
+            this.showStatic("next adventure ❤️");
         }
     },
 
@@ -49,12 +50,7 @@ const UI = {
             fd.style.display = "block";
         }
 
-        const els = {
-            days: document.getElementById('days'),
-            hours: document.getElementById('hours'),
-            minutes: document.getElementById('minutes'),
-            seconds: document.getElementById('seconds')
-        };
+        const els = { days: document.getElementById('days'), hours: document.getElementById('hours'), minutes: document.getElementById('minutes'), seconds: document.getElementById('seconds') };
 
         const tick = () => {
             const dist = target - Date.now();
@@ -72,9 +68,7 @@ const UI = {
                 if (els[u]) {
                     els[u].innerText = t[u].toString().padStart(2, '0');
                     if (u !== 'seconds') {
-                        const isExpired = (u === 'days' && t.days === 0) || 
-                                         (u === 'hours' && t.days === 0 && t.hours === 0) || 
-                                         (u === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
+                        const isExpired = (u === 'days' && t.days === 0) || (u === 'hours' && t.days === 0 && t.hours === 0) || (u === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
                         els[u].classList.toggle('is-due', isExpired);
                     }
                 }
@@ -91,12 +85,9 @@ const UI = {
     showStatic(msg) {
         if (this.state.timer) clearInterval(this.state.timer);
         const count = document.getElementById("countdown");
-        const desc = document.getElementById("description-display");
         if (count) count.style.display = "none";
-        if (desc) {
-            desc.style.display = "block";
-            desc.innerText = msg;
-        }
+        const desc = document.getElementById("description-display");
+        if (desc) { desc.style.display = "block"; desc.innerText = msg; }
         this.reveal();
     },
 
