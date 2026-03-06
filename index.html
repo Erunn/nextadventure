@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json?v=6">
+    <meta name="theme-color" content="#0f1115">
+    <link rel="manifest" href="manifest.json?v=final">
     <link rel="dns-prefetch" href="https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app">
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <title>next adventure</title>
@@ -15,7 +16,17 @@
         :root { --bg-dark: #0f1115; --bg-light: #f4f5f7; --accent: rgba(255, 255, 255, 0.9); --safe-bottom: env(safe-area-inset-bottom, 20px); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         html { height: 101%; background-color: var(--bg-dark); scrollbar-width: none; }
-        body { margin: 0; width: 100%; min-height: 101vh; background-color: var(--bg-dark); background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), radial-gradient(circle at top, #161921, var(--bg-dark)); background-blend-mode: overlay; color: var(--accent); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; transition: background-color 0.5s ease; -ms-overflow-style: none; }
+        body { 
+            margin: 0; width: 100%; min-height: 101vh; 
+            background-color: var(--bg-dark); 
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), radial-gradient(circle at top, #161921, var(--bg-dark)); 
+            background-blend-mode: overlay; color: var(--accent); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            -webkit-font-smoothing: antialiased; 
+            text-rendering: optimizeLegibility;
+            display: flex; justify-content: center; align-items: center; 
+            transition: background-color 0.5s ease; -ms-overflow-style: none; 
+        }
         html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
         body.light-mode { background-color: var(--bg-light); background-image: radial-gradient(circle at top, #ffffff, var(--bg-light)); color: #2d3748; }
 
@@ -25,7 +36,6 @@
         .timer-container { position: relative; text-align: center; width: 90%; max-width: 500px; padding: 20px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
         h1, #description-display, #full-date-display { -webkit-user-select: text; user-select: text; }
         
-        /* Typography Polish: Tighter title, elegant spacing */
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(2rem, 7vw, 2.5rem); margin: 0 0 16px 0; text-transform: lowercase; min-height: 1.2em; display: flex; justify-content: center; align-items: center; gap: 0.15em; }
         h1 span { font-size: 0.7em; line-height: 1; display: inline-block; transform: translateY(-0.02em); }
         
@@ -36,7 +46,6 @@
         .time-box span { font-family: 'SF Mono', 'ui-monospace', monospace; font-size: clamp(2.4rem, 8vw, 3.8rem); font-weight: 200; display: block; line-height: 1; font-variant-numeric: tabular-nums; transition: all 0.5s ease; letter-spacing: -0.02em; }
         .time-box span.is-due { opacity: 0.08; filter: blur(0.5px); transform: scale(0.95); }
         
-        /* Typography Polish: Ultra-wide, delicate labels */
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.35); }
         
