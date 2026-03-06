@@ -1,30 +1,89 @@
-/* 1. FONT & VARIABLE SYSTEM */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 
-:root {
-    --bg-dark: #121417;
-    --bg-light: #f9fafb;
-    --accent-white: #ffffff;
-    --text-dim: rgba(255, 255, 255, 0.3);
-    /* Dynamic Safe Areas for Modern Bezels */
-    --safe-top: env(safe-area-inset-top, 20px);
-    --safe-bottom: env(safe-area-inset-bottom, 20px);
-    --safe-left: env(safe-area-inset-left, 20px);
-    --safe-right: env(safe-area-inset-right, 20px);
-}
-
-/* 2. CORE RESET & PERFORMANCE */
-* { 
-    box-sizing: border-box; 
-    -webkit-tap-highlight-color: transparent; 
-}
-
 body {
-    background-color: var(--bg-dark);
-    /* Premium Noise Texture & Radial Gradient */
-    background-image: 
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-        radial-gradient(circle at top, #1c1f26, var(--bg-dark));
-    background-blend-mode: overlay;
-    color: var(--accent-white);
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background-color: #121417;
+    background-image: radial-gradient(circle at top, #1c1f26, #121417);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 101vh;
+    overflow-x: hidden;
+}
+
+body.light-mode {
+    background-color: #f9fafb;
+    background-image: radial-gradient(circle at top, #ffffff, #f9fafb);
+    color: #111827;
+}
+
+.sync-reveal {
+    opacity: 0;
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.sync-reveal.reveal {
+    opacity: 1 !important;
+}
+
+.timer-container {
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    z-index: 10;
+}
+
+#countdown {
+    display: flex;
+    justify-content: space-around;
+    margin: 40px 0;
+}
+
+.time-box span {
+    font-size: 3rem;
+    font-weight: 200;
+    display: block;
+}
+
+.label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.4;
+}
+
+#theme-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    z-index: 100;
+}
+
+#cat-perch {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 100px;
+    height: 100px;
+}
+
+.cat-image {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* suri images */
+.suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+.suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+.suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+.suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+.suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+.suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+.suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
