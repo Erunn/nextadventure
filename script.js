@@ -6,9 +6,17 @@ const UI = {
     },
     
     init() {
+        this.preloadImages();
         this.renderSuri();
         this.initTheme();
         this.load();
+    },
+
+    preloadImages() {
+        for(let i=1; i<=this.config.SURI_TOTAL; i++) {
+            const img = new Image();
+            img.src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
+        }
     },
 
     async load() {
@@ -38,90 +46,3 @@ const UI = {
         const fd = document.getElementById("full-date-display");
         if (fd) {
             fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            fd.style.display = "block";
-        }
-
-        const els = {
-            days: document.getElementById('days'),
-            hours: document.getElementById('hours'),
-            minutes: document.getElementById('minutes'),
-            seconds: document.getElementById('seconds'),
-            countContainer: document.getElementById("countdown")
-        };
-
-        const tick = () => {
-            const dist = target - Date.now();
-            if (dist <= 0) return this.showStatic(msg);
-
-            const t = {
-                days: Math.floor(dist / 86400000),
-                hours: Math.floor((dist % 86400000) / 3600000),
-                minutes: Math.floor((dist % 3600000) / 60000),
-                seconds: Math.floor((dist % 60000) / 1000)
-            };
-
-            for (const [unit, val] of Object.entries(t)) {
-                els[unit].innerText = val.toString().padStart(2, '0');
-                if (unit !== 'seconds') {
-                    const isPast = (unit === 'days' && t.days === 0) || 
-                                   (unit === 'hours' && t.days === 0 && t.hours === 0) || 
-                                   (unit === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
-                    els[unit].classList.toggle('is-due', isPast);
-                }
-            }
-
-            els.countContainer.style.display = "flex";
-            this.reveal();
-        };
-
-        tick();
-        this.state.timer = setInterval(tick, 1000);
-    },
-
-    showStatic(msg) {
-        if (this.state.timer) clearInterval(this.state.timer);
-        document.getElementById("countdown").style.display = "none";
-        document.getElementById("full-date-display").style.display = "none";
-        const desc = document.getElementById("description-display");
-        if (desc) {
-            desc.style.display = "block";
-            desc.innerText = msg;
-        }
-        this.reveal();
-    },
-
-    reveal() {
-        if (this.state.isRevealed) return;
-        document.querySelectorAll(".sync-reveal").forEach(el => el.classList.add("reveal"));
-        this.state.isRevealed = true;
-    },
-
-    renderSuri() {
-        const last = sessionStorage.getItem('ls');
-        let c; do { c = Math.floor(Math.random() * this.config.SURI_TOTAL) + 1; } while (c == last);
-        sessionStorage.setItem('ls', c);
-        const perch = document.getElementById('cat-perch');
-        const img = document.createElement('div');
-        img.className = `cat-image suri-${c}`;
-        perch.appendChild(img);
-    },
-
-    initTheme() {
-        const btn = document.getElementById('theme-toggle');
-        const isL = localStorage.getItem('th') === 'l';
-        if (isL) document.body.classList.add('light-mode');
-        this.updIcons(isL);
-        btn.onclick = () => {
-            const l = document.body.classList.toggle('light-mode');
-            localStorage.setItem('th', l ? 'l' : 'd');
-            this.updIcons(l);
-        };
-    },
-
-    updIcons(l) {
-        document.getElementById('sun-icon').style.display = l ? 'block' : 'none';
-        document.getElementById('moon-icon').style.display = l ? 'none' : 'block';
-    }
-};
-
-window.onload = () => UI.init();
