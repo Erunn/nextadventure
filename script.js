@@ -6,9 +6,17 @@ const UI = {
     },
     
     init() {
+        this.preloadImages();
         this.renderSuri();
         this.initTheme();
         this.load();
+    },
+
+    preloadImages() {
+        for(let i=1; i<=this.config.SURI_TOTAL; i++) {
+            const img = new Image();
+            img.src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
+        }
     },
 
     async load() {
@@ -45,7 +53,8 @@ const UI = {
             days: document.getElementById('days'),
             hours: document.getElementById('hours'),
             minutes: document.getElementById('minutes'),
-            seconds: document.getElementById('seconds')
+            seconds: document.getElementById('seconds'),
+            countContainer: document.getElementById("countdown")
         };
 
         const tick = () => {
@@ -70,7 +79,8 @@ const UI = {
                     }
                 }
             }
-            document.getElementById("countdown").style.display = "flex";
+
+            if (els.countContainer) els.countContainer.style.display = "flex";
             this.reveal();
         };
 
@@ -80,8 +90,9 @@ const UI = {
 
     showStatic(msg) {
         if (this.state.timer) clearInterval(this.state.timer);
-        document.getElementById("countdown").style.display = "none";
+        const count = document.getElementById("countdown");
         const desc = document.getElementById("description-display");
+        if (count) count.style.display = "none";
         if (desc) {
             desc.style.display = "block";
             desc.innerText = msg;
@@ -108,12 +119,24 @@ const UI = {
     },
 
     initTheme() {
+        const btn = document.getElementById('theme-toggle');
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
-        document.getElementById('theme-toggle').onclick = () => {
-            const l = document.body.classList.toggle('light-mode');
-            localStorage.setItem('th', l ? 'l' : 'd');
-        };
+        this.updIcons(isL);
+        if (btn) {
+            btn.onclick = () => {
+                const l = document.body.classList.toggle('light-mode');
+                localStorage.setItem('th', l ? 'l' : 'd');
+                this.updIcons(l);
+            };
+        }
+    },
+
+    updIcons(l) {
+        const sun = document.getElementById('sun-icon');
+        const moon = document.getElementById('moon-icon');
+        if (sun) sun.style.display = l ? 'block' : 'none';
+        if (moon) moon.style.display = l ? 'none' : 'block';
     }
 };
 
