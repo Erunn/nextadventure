@@ -1,5 +1,9 @@
 const UI = {
     state: { isRevealed: false, timer: null },
+    config: {
+        DB: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json",
+        SURI_TOTAL: 7
+    },
     
     init() {
         this.renderSuri();
@@ -9,7 +13,7 @@ const UI = {
 
     async load() {
         try {
-            const r = await fetch(`https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json?v=${Date.now()}`);
+            const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
             if (!d) throw 0;
 
@@ -32,7 +36,10 @@ const UI = {
         const target = new Date(p[2], p[1]-1, p[0], p[3]||0, p[4]||0).getTime();
         
         const fd = document.getElementById("full-date-display");
-        if (fd) fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        if (fd) {
+            fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            fd.style.display = "block";
+        }
 
         const tick = () => {
             const dist = target - Date.now();
@@ -57,7 +64,6 @@ const UI = {
             });
 
             document.getElementById("countdown").style.display = "flex";
-            if (fd) fd.style.display = "block";
             this.reveal();
         };
 
@@ -70,8 +76,10 @@ const UI = {
         document.getElementById("countdown").style.display = "none";
         document.getElementById("full-date-display").style.display = "none";
         const desc = document.getElementById("description-display");
-        desc.style.display = "block";
-        desc.innerText = msg;
+        if (desc) {
+            desc.style.display = "block";
+            desc.innerText = msg;
+        }
         this.reveal();
     },
 
@@ -83,11 +91,12 @@ const UI = {
 
     renderSuri() {
         const last = sessionStorage.getItem('ls');
-        let c; do { c = Math.floor(Math.random() * 7) + 1; } while (c == last);
+        let c; do { c = Math.floor(Math.random() * this.config.SURI_TOTAL) + 1; } while (c == last);
         sessionStorage.setItem('ls', c);
+        const perch = document.getElementById('cat-perch');
         const img = document.createElement('div');
         img.className = `cat-image suri-${c}`;
-        document.getElementById('cat-perch').appendChild(img);
+        perch.appendChild(img);
     },
 
     initTheme() {
@@ -95,16 +104,4 @@ const UI = {
         if (isL) document.body.classList.add('light-mode');
         this.updIcons(isL);
         document.getElementById('theme-toggle').onclick = () => {
-            const l = document.body.classList.toggle('light-mode');
-            localStorage.setItem('th', l ? 'l' : 'd');
-            this.updIcons(l);
-        };
-    },
-
-    updIcons(l) {
-        document.getElementById('sun-icon').style.display = l ? 'block' : 'none';
-        document.getElementById('moon-icon').style.display = l ? 'none' : 'block';
-    }
-};
-
-window.onload = () => UI.init();
+            const l = document.
