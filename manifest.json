@@ -5,11 +5,13 @@
   "display": "standalone",
   "background_color": "#121417",
   "theme_color": "#121417",
+  "description": "Counting down to our next adventure.",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "https://raw.githubusercontent.com/Erunn/ournextadventure/main/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
