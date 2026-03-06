@@ -1,13 +1,20 @@
 const UI = {
-    state: { isRevealed: false, timer: null },
+    state: { isRevealed: false, timer: null, last: {} },
     config: { DB: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json", SURI_TOTAL: 7 },
+    dom: {},
     
     init() {
+        ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon'].forEach(id => {
+            this.dom[id] = document.getElementById(id);
+        });
+
         this.renderSuri();
         this.initTheme();
         this.load();
-        const perch = document.getElementById('cat-perch');
-        if (perch) perch.addEventListener('pointerdown', e => { e.stopPropagation(); this.renderSuri(); });
+        
+        if (this.dom['cat-perch']) {
+            this.dom['cat-perch'].addEventListener('pointerdown', e => { e.stopPropagation(); this.renderSuri(); });
+        }
     },
     
     preloadImages() {
@@ -22,10 +29,9 @@ const UI = {
             const d = await r.json();
             if (!d) throw 0;
             
-            // Absolutely zero fallback. If there's no emoji match, render nothing.
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span>${emoji}</span>` : "";
-            document.getElementById("event-name").innerHTML = `${d.eventName}${emojiHTML}`;
+            if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
             else this.showStatic(d.noTimerMessage);
@@ -35,38 +41,39 @@ const UI = {
     },
     
     runTimer(targetStr, msg) {
-        const [D, M, Y, h=0, m=0] = targetStr.split(/[-/ :]/);
-        const target = new Date(Y, M-1, D, h, m).getTime();
-        const fd = document.getElementById("full-date-display");
+        // Fix: Now explicitly extracts and uses seconds (s=0 defaults if missing)
+        const [D, M, Y, h=0, m=0, s=0] = targetStr.split(/[-/ :]/);
+        const target = new Date(Y, M-1, D, h, m, s).getTime();
         
-        if (fd) {
-            fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            fd.style.display = "block";
+        if (this.dom['full-date-display']) {
+            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            this.dom['full-date-display'].style.display = "block";
         }
-        
-        const els = { days: document.getElementById('days'), hours: document.getElementById('hours'), minutes: document.getElementById('minutes'), seconds: document.getElementById('seconds') };
         
         const tick = () => {
             const dist = target - Date.now();
             if (dist <= 0) return this.showStatic(msg);
             
-            const t = {
+            const vals = {
                 days: Math.floor(dist / 86400000),
                 hours: Math.floor((dist % 86400000) / 3600000),
                 minutes: Math.floor((dist % 3600000) / 60000),
                 seconds: Math.floor((dist % 60000) / 1000)
             };
             
-            Object.keys(els).forEach(u => {
-                if (!els[u]) return;
-                els[u].innerText = t[u].toString().padStart(2, '0');
-                if (u !== 'seconds') {
-                    const isDue = (u==='days'&&t.days===0) || (u==='hours'&&t.days===0&&t.hours===0) || (u==='minutes'&&t.days===0&&t.hours===0&&t.minutes===0);
-                    els[u].classList.toggle('is-due', isDue);
+            Object.keys(vals).forEach(u => {
+                const val = vals[u];
+                if (this.dom[u] && this.state.last[u] !== val) {
+                    this.state.last[u] = val;
+                    this.dom[u].innerText = val.toString().padStart(2, '0');
+                    if (u !== 'seconds') {
+                        const isDue = (u==='days'&&vals.days===0) || (u==='hours'&&vals.days===0&&vals.hours===0) || (u==='minutes'&&vals.days===0&&vals.hours===0&&vals.minutes===0);
+                        this.dom[u].classList.toggle('is-due', isDue);
+                    }
                 }
             });
             
-            document.getElementById("countdown").style.display = "flex";
+            if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
             this.reveal();
         };
         
@@ -76,20 +83,17 @@ const UI = {
     
     showStatic(msg) {
         if (this.state.timer) clearInterval(this.state.timer);
-        const count = document.getElementById("countdown");
-        const fd = document.getElementById("full-date-display");
-        const desc = document.getElementById("description-display");
         
-        if (count) {
-            count.style.display = "flex";
-            count.style.visibility = "hidden";
-            count.style.opacity = "0";
+        if (this.dom['countdown']) {
+            this.dom['countdown'].style.display = "flex";
+            this.dom['countdown'].style.visibility = "hidden";
+            this.dom['countdown'].style.opacity = "0";
         }
         
-        if (fd) fd.style.display = "none";
-        if (desc) { 
-            desc.style.display = "block"; 
-            desc.innerText = msg; 
+        if (this.dom['full-date-display']) this.dom['full-date-display'].style.display = "none";
+        if (this.dom['description-display']) { 
+            this.dom['description-display'].style.display = "block"; 
+            this.dom['description-display'].innerText = msg; 
         }
         this.reveal();
     },
@@ -104,25 +108,25 @@ const UI = {
         const last = sessionStorage.getItem('ls');
         let c; do { c = Math.floor(Math.random() * this.config.SURI_TOTAL) + 1; } while (c.toString() === last);
         sessionStorage.setItem('ls', c);
-        const perch = document.getElementById('cat-perch');
-        if (perch) perch.innerHTML = `<div class="cat-image suri-${c}"></div>`;
+        if (this.dom['cat-perch']) this.dom['cat-perch'].innerHTML = `<div class="cat-image suri-${c}"></div>`;
     },
     
     initTheme() {
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
         this.updIcons(isL);
-        document.getElementById('theme-toggle').onclick = () => {
-            const l = document.body.classList.toggle('light-mode');
-            localStorage.setItem('th', l ? 'l' : 'd');
-            this.updIcons(l);
-        };
+        if (this.dom['theme-toggle']) {
+            this.dom['theme-toggle'].onclick = () => {
+                const l = document.body.classList.toggle('light-mode');
+                localStorage.setItem('th', l ? 'l' : 'd');
+                this.updIcons(l);
+            };
+        }
     },
     
     updIcons(l) {
-        const sun = document.getElementById('sun-icon'), moon = document.getElementById('moon-icon');
-        if (sun) sun.style.display = l ? 'block' : 'none';
-        if (moon) moon.style.display = l ? 'none' : 'block';
+        if (this.dom['sun-icon']) this.dom['sun-icon'].style.display = l ? 'block' : 'none';
+        if (this.dom['moon-icon']) this.dom['moon-icon'].style.display = l ? 'none' : 'block';
     }
 };
 
