@@ -25,14 +25,13 @@
                 radial-gradient(circle at top, #1c1f26, var(--bg-dark));
             background-blend-mode: overlay;
             color: var(--accent);
-            /* Corrected: Using System Stack to bypass CORS font errors */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* Using System Fonts to avoid CORS font errors */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
             display: flex; justify-content: center; align-items: center; 
             min-height: 101vh; margin: 0;
             transition: background-color 0.5s ease;
-            overflow-x: hidden;
-            overscroll-behavior-y: auto;
+            overflow: hidden;
         }
 
         body.light-mode {
@@ -45,7 +44,6 @@
             opacity: 0;
             transform: translateY(12px) translateZ(0);
             transition: opacity 0.8s cubic-bezier(0.2, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
-            backface-visibility: hidden;
             will-change: opacity, transform;
         }
 
@@ -58,7 +56,7 @@
             position: relative; text-align: center; width: 90%; max-width: 500px; padding: 20px; z-index: 10;
         }
 
-        h1 { font-weight: 600; letter-spacing: -0.02em; font-size: clamp(1.8rem, 6vw, 2.2rem); margin-bottom: 30px; text-transform: lowercase; }
+        h1 { font-weight: 600; letter-spacing: -0.02em; font-size: clamp(1.8rem, 6vw, 2.2rem); margin-bottom: 30px; }
         #countdown { display: flex; justify-content: space-around; align-items: center; margin: 40px auto; gap: 8px; }
 
         .time-box span { 
@@ -66,7 +64,6 @@
             font-size: clamp(2.2rem, 8vw, 3.5rem); 
             font-weight: 300; display: block; line-height: 1; 
             font-variant-numeric: tabular-nums;
-            transition: all 0.4s ease; 
         }
 
         .time-box span.is-due { opacity: 0.12; filter: blur(0.5px); transform: scale(0.92); }
@@ -92,8 +89,6 @@
             width: 100px; height: 100px; z-index: 15; 
         }
 
-        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
-
         .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
 
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
@@ -109,11 +104,7 @@
 </head>
 <body>
     <div id="cat-perch" class="sync-reveal"></div> 
-
-    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
-        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
+    <button id="theme-toggle" class="sync-reveal">☀️</button>
 
     <main class="timer-container sync-reveal">
         <h1 id="event-name">loading...</h1>
@@ -128,10 +119,5 @@
     </main>
 
     <script src="script.js" defer></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-    </script>
 </body>
 </html>
