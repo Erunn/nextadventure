@@ -7,8 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Next Adventure</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
 
     <style>
@@ -28,11 +26,11 @@
                 radial-gradient(circle at top, #1c1f26, var(--bg-dark));
             background-blend-mode: overlay;
             color: var(--accent);
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            /* Fallback fonts added to prevent "broken" look if Inter fails */
+            font-family: 'Inter', -apple-system, system-ui, Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
             display: flex; justify-content: center; align-items: center; 
-            min-height: 101vh; /* Enable pull-to-refresh */
-            margin: 0;
+            min-height: 101vh; margin: 0;
             transition: background-color 0.5s ease;
             overflow-x: hidden;
             overscroll-behavior-y: auto;
@@ -62,4 +60,41 @@
         }
 
         h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom: 30px; }
-        #countdown { display: flex; justify-content: space-around; align-
+        
+        /* Layout fix: Ensuring the timer units stay in a row */
+        #countdown { display: flex; justify-content: space-around; align-items: center; margin: 40px auto; gap: 8px; }
+
+        .time-box span { 
+            font-family: 'SF Mono', 'ui-monospace', monospace; font-size: clamp(2.5rem, 8vw, 3.5rem); 
+            font-weight: 200; display: block; line-height: 1; transition: all 0.4s ease; 
+        }
+
+        .time-box span.is-due { opacity: 0.12; filter: blur(0.5px); transform: scale(0.92); }
+
+        .label { 
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; 
+            margin-top: 10px; color: rgba(255, 255, 255, 0.3); font-weight: 400;
+        }
+        body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
+
+        #theme-toggle {
+            position: fixed; 
+            bottom: calc(20px + var(--safe-bottom)); 
+            right: calc(30px + env(safe-area-inset-right, 20px)); 
+            border: none; background: none; cursor: pointer; padding: 12px; 
+            color: inherit; opacity: 0.4; transition: all 0.3s ease; z-index: 100;
+        }
+
+        #cat-perch { 
+            position: fixed; 
+            bottom: var(--safe-bottom); 
+            left: calc(20px + env(safe-area-inset-left, 20px)); 
+            width: 100px; height: 100px; z-index: 15; 
+        }
+
+        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
+
+        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
+
+        /* Suri Image Mappings */
+        .suri-1 { background
