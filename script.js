@@ -22,7 +22,7 @@ const UI = {
             const d = await r.json();
             if (!d) throw 0;
             
-            // Strictly check for an emoji. If none exists, leave it blank.
+            // Absolutely zero fallback. If there's no emoji match, render nothing.
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span>${emoji}</span>` : "";
             document.getElementById("event-name").innerHTML = `${d.eventName}${emojiHTML}`;
@@ -30,7 +30,6 @@ const UI = {
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
             else this.showStatic(d.noTimerMessage);
         } catch (e) {
-            // Also removed the fallback from the error state
             this.showStatic("next adventure");
         }
     },
@@ -82,12 +81,9 @@ const UI = {
         const desc = document.getElementById("description-display");
         
         if (count) {
-            if (count.style.display === "flex") {
-                count.style.visibility = "hidden";
-                count.style.opacity = "0";
-            } else {
-                count.style.display = "none";
-            }
+            count.style.display = "flex";
+            count.style.visibility = "hidden";
+            count.style.opacity = "0";
         }
         
         if (fd) fd.style.display = "none";
