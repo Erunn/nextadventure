@@ -10,8 +10,9 @@ const UI = {
         this.load();
         const perch = document.getElementById('cat-perch');
         if (perch) {
-            perch.addEventListener('mousedown', (e) => {
-                e.preventDefault();
+            // pointerdown is the most reliable for laptop + mobile
+            perch.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
                 this.renderSuri();
             });
         }
