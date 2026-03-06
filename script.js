@@ -104,4 +104,16 @@ const UI = {
         if (isL) document.body.classList.add('light-mode');
         this.updIcons(isL);
         document.getElementById('theme-toggle').onclick = () => {
-            const l = document.
+            const l = document.body.classList.toggle('light-mode');
+            localStorage.setItem('th', l ? 'l' : 'd');
+            this.updIcons(l);
+        };
+    },
+
+    updIcons(l) {
+        document.getElementById('sun-icon').style.display = l ? 'block' : 'none';
+        document.getElementById('moon-icon').style.display = l ? 'none' : 'block';
+    }
+};
+
+window.onload = () => UI.init();
