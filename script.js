@@ -6,7 +6,8 @@ const UI = {
     },
     
     init() {
-        setTimeout(() => this.reveal(), 3000); // Safety reveal
+        // Safety Reveal
+        setTimeout(() => this.reveal(), 3000);
         this.preloadImages();
         this.renderSuri();
         this.initTheme();
@@ -15,8 +16,7 @@ const UI = {
 
     preloadImages() {
         for(let i=1; i<=this.config.SURI_TOTAL; i++) {
-            const img = new Image();
-            img.src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
+            new Image().src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
         }
     },
 
@@ -24,12 +24,11 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
-            if (!d) throw new Error();
+            if (!d) throw 0;
 
-            document.title = d.shareTitle || "Next Adventure";
+            const nameEl = document.getElementById("event-name");
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "❤️";
-            const eventNameEl = document.getElementById("event-name");
-            if (eventNameEl) eventNameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
+            if (nameEl) nameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
 
             if (Number(d.useTimer) === 1 && d.targetDate) {
                 this.runTimer(d.targetDate, d.celebrationMessage);
@@ -55,8 +54,7 @@ const UI = {
             days: document.getElementById('days'),
             hours: document.getElementById('hours'),
             minutes: document.getElementById('minutes'),
-            seconds: document.getElementById('seconds'),
-            countContainer: document.getElementById("countdown")
+            seconds: document.getElementById('seconds')
         };
 
         const tick = () => {
@@ -70,7 +68,6 @@ const UI = {
                 seconds: Math.floor((dist % 60000) / 1000)
             };
 
-            // Restored dimming logic
             const units = ['days', 'hours', 'minutes', 'seconds'];
             units.forEach(u => {
                 if (els[u]) {
@@ -84,7 +81,7 @@ const UI = {
                 }
             });
 
-            if (els.countContainer) els.countContainer.style.display = "flex";
+            document.getElementById("countdown").style.display = "flex";
             this.reveal();
         };
 
@@ -106,11 +103,8 @@ const UI = {
 
     reveal() {
         if (this.state.isRevealed) return;
-        const els = document.querySelectorAll(".sync-reveal");
-        if (els.length > 0) {
-            els.forEach(el => el.classList.add("reveal"));
-            this.state.isRevealed = true;
-        }
+        document.querySelectorAll(".sync-reveal").forEach(el => el.classList.add("reveal"));
+        this.state.isRevealed = true;
     },
 
     renderSuri() {
@@ -119,23 +113,17 @@ const UI = {
         sessionStorage.setItem('ls', c);
         const perch = document.getElementById('cat-perch');
         if (perch) {
-            perch.innerHTML = '';
-            const img = document.createElement('div');
-            img.className = `cat-image suri-${c}`;
-            perch.appendChild(img);
+            perch.innerHTML = `<div class="cat-image suri-${c}"></div>`;
         }
     },
 
     initTheme() {
-        const btn = document.getElementById('theme-toggle');
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
-        if (btn) {
-            btn.onclick = () => {
-                const l = document.body.classList.toggle('light-mode');
-                localStorage.setItem('th', l ? 'l' : 'd');
-            };
-        }
+        document.getElementById('theme-toggle').onclick = () => {
+            const l = document.body.classList.toggle('light-mode');
+            localStorage.setItem('th', l ? 'l' : 'd');
+        };
     }
 };
 
