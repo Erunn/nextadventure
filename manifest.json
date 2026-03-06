@@ -1,15 +1,17 @@
 {
-  "name": "Our Next Adventure",
+  "name": "Next Adventure",
   "short_name": "Adventure",
-  "start_url": "/ournextadventure/",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#1a1d23",
-  "theme_color": "#1a1d23",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "description": "Counting down to our next trip.",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>",
+      "src": "https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
