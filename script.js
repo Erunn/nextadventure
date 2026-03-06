@@ -133,6 +133,9 @@ const UI = {
     updIcons(l) {
         if (this.dom['sun-icon']) this.dom['sun-icon'].style.display = l ? 'block' : 'none';
         if (this.dom['moon-icon']) this.dom['moon-icon'].style.display = l ? 'none' : 'block';
+        
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) metaTheme.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
     }
 };
 
