@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=2">
     <title>next adventure</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🕒</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🕒</text></svg>">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2280%22>🕒</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2280%22>🕒</text></svg>">
+    
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <style>
         :root{--bg-dark:#121417;--bg-light:#f9fafb;--accent:#ffffff;--safe-bottom:env(safe-area-inset-bottom,20px)}
@@ -27,15 +29,9 @@
         .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;margin-top:10px;color:rgba(255,255,255,.4);font-weight:500}
         body.light-mode .label{color:rgba(0,0,0,.5)}
         #theme-toggle{position:fixed;bottom:calc(20px + var(--safe-bottom));right:calc(30px + env(safe-area-inset-right,20px));border:none;background:none;cursor:pointer;padding:12px;color:inherit;opacity:.4;transition:all .3s ease;z-index:100}
-        
-        /* Fixed: No bounce, high z-index for laptop interaction */
-        #cat-perch { 
-            position: fixed; bottom: var(--safe-bottom); left: calc(20px + env(safe-area-inset-left, 20px)); 
-            width: 100px; height: 100px; z-index: 999; cursor: pointer;
-        }
-        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
+        #cat-perch{position:fixed;bottom:var(--safe-bottom);left:calc(20px + env(safe-area-inset-left,20px));width:100px;height:100px;z-index:999;cursor:pointer;transition:transform .2s ease}
+        @media (min-width:1024px){#cat-perch{width:180px;height:180px}}
         .cat-image{width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:bottom left;transform:translateZ(0);contain:content;pointer-events:none}
-        
         .suri-1{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png')}
         .suri-2{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png')}
         .suri-3{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png')}
