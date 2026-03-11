@@ -48,6 +48,21 @@
         
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.35); }
+
+        /* Task List Aesthetics */
+        #task-section { width: 100%; max-width: 400px; margin: 0 auto; text-align: left; }
+        #task-list { list-style: none; padding: 0; margin: 0 0 15px 0; }
+        #task-list li { padding: 8px 0; font-size: 0.9rem; font-weight: 400; opacity: 0.75; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.02em; display: flex; align-items: center; gap: 12px; }
+        #task-list li::before { content: '○'; font-size: 0.8em; opacity: 0.4; transition: all 0.3s ease; }
+        #task-list li.done { text-decoration: line-through; opacity: 0.25; }
+        #task-list li.done::before { content: '●'; }
+        
+        #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 0.9rem; padding: 10px 0; outline: none; transition: all 0.3s ease; letter-spacing: 0.02em; }
+        #new-task-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
+        #new-task-input:focus { border-bottom: 1px solid rgba(255,255,255,0.2); }
+        body.light-mode #new-task-input { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        body.light-mode #new-task-input::placeholder { color: rgba(0,0,0,0.2); }
+        body.light-mode #new-task-input:focus { border-bottom: 1px solid rgba(0,0,0,0.2); }
         
         #theme-toggle { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: calc(30px + env(safe-area-inset-right, 20px)); border: none; background: none; cursor: pointer; padding: 12px; color: inherit; opacity: 0.25; transition: opacity 0.4s ease; z-index: 100; }
         #theme-toggle:hover { opacity: 0.6; }
@@ -84,6 +99,11 @@
             <div class="time-box"><span id="minutes">00</span><div class="label">min</div></div>
             <div class="time-box"><span id="seconds">00</span><div class="label">sec</div></div>
         </div>
+
+        <section id="task-section" style="display:none;">
+            <ul id="task-list"></ul>
+            <input type="text" id="new-task-input" placeholder="+ add a task..." autocomplete="off">
+        </section>
     </main>
     
     <script src="script.js" defer></script>
