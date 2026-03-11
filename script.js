@@ -38,7 +38,6 @@ const UI = {
     },
     
     async syncTasks() {
-        // Optimistic UI updates
         localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
         this.renderTasks();
 
@@ -66,9 +65,46 @@ const UI = {
     },
 
     deleteTask(id) {
-        // Filter out the deleted task and trigger a cloud sync
         this.state.tasks = this.state.tasks.filter(t => t && t.id !== id);
         this.syncTasks();
+    },
+
+    updateTask(id, newText) {
+        const task = this.state.tasks.find(t => t.id === id);
+        if (task && newText.trim()) {
+            task.text = newText.trim();
+            this.syncTasks();
+        } else {
+            this.renderTasks(); 
+        }
+    },
+
+    enterEditMode(li, task) {
+        li.innerHTML = '';
+        li.className = ''; 
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'edit-task-input';
+        input.value = task.text;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-btn';
+        saveBtn.innerHTML = '✓';
+
+        const triggerSave = () => this.updateTask(task.id, input.value);
+
+        input.onkeypress = (e) => { if (e.key === 'Enter') triggerSave(); };
+        input.onkeydown = (e) => { if (e.key === 'Escape') this.renderTasks(); };
+        saveBtn.onclick = triggerSave;
+
+        li.appendChild(input);
+        li.appendChild(saveBtn);
+        
+        setTimeout(() => {
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length);
+        }, 10);
     },
     
     renderTasks() {
@@ -79,23 +115,35 @@ const UI = {
             const li = document.createElement('li');
             if (t.done) li.className = 'done';
             
-            // Text area (clickable for toggling)
             const textSpan = document.createElement('span');
             textSpan.className = 'task-text';
             textSpan.innerText = t.text;
             textSpan.onclick = () => this.toggleTask(t.id);
             
-            // Delete button (clickable only for deletion)
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'task-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'action-btn';
+            editBtn.innerHTML = '✎';
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.enterEditMode(li, t);
+            };
+
             const delBtn = document.createElement('button');
-            delBtn.className = 'delete-btn';
+            delBtn.className = 'action-btn';
             delBtn.innerHTML = '×';
             delBtn.onclick = (e) => {
-                e.stopPropagation(); // Prevents the toggle click from firing
+                e.stopPropagation();
                 this.deleteTask(t.id);
             };
 
+            actionsDiv.appendChild(editBtn);
+            actionsDiv.appendChild(delBtn);
+
             li.appendChild(textSpan);
-            li.appendChild(delBtn);
+            li.appendChild(actionsDiv);
             this.dom['task-list'].appendChild(li);
         });
     },
@@ -121,7 +169,7 @@ const UI = {
             
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
-            if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
+            if (this.dom['event-name']) this.dom['event-nameinnerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
             else this.showStatic(d.noTimerMessage);
