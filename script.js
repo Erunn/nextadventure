@@ -18,7 +18,6 @@ const UI = {
         }
     },
     
-    // --- CLOUD-SYNC TASK MODULE ---
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
         if (stored) {
@@ -32,6 +31,9 @@ const UI = {
                     this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
                     e.target.value = '';
                     this.syncTasks(); 
+                    
+                    // Auto-scroll to top when a new task is added
+                    if (this.dom['task-list']) this.dom['task-list'].scrollTop = 0;
                 }
             });
         }
@@ -90,7 +92,8 @@ const UI = {
 
         const saveBtn = document.createElement('button');
         saveBtn.className = 'action-btn';
-        saveBtn.innerHTML = '✓';
+        // A minimal checkmark SVG for saving edits
+        saveBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
         const triggerSave = () => this.updateTask(task.id, input.value);
 
@@ -111,7 +114,13 @@ const UI = {
         if (!this.dom['task-list']) return;
         this.dom['task-list'].innerHTML = '';
         
-        this.state.tasks.filter(t => t).forEach(t => {
+        // AUTO-SORTING: Active tasks float to top, completed tasks sink to bottom
+        const sortedTasks = this.state.tasks.filter(t => t).sort((a, b) => {
+            if (a.done === b.done) return 0;
+            return a.done ? 1 : -1;
+        });
+
+        sortedTasks.forEach(t => {
             const li = document.createElement('li');
             if (t.done) li.className = 'done';
             
@@ -123,17 +132,19 @@ const UI = {
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'task-actions';
 
+            // Premium SVG Edit Pencil
             const editBtn = document.createElement('button');
             editBtn.className = 'action-btn';
-            editBtn.innerHTML = '✎';
+            editBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             editBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.enterEditMode(li, t);
             };
 
+            // Premium SVG Delete Cross
             const delBtn = document.createElement('button');
             delBtn.className = 'action-btn';
-            delBtn.innerHTML = '×';
+            delBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             delBtn.onclick = (e) => {
                 e.stopPropagation();
                 this.deleteTask(t.id);
@@ -147,7 +158,6 @@ const UI = {
             this.dom['task-list'].appendChild(li);
         });
     },
-    // ------------------------------
 
     preloadImages() {
         for(let i=1; i<=this.config.SURI_TOTAL; i++) {
@@ -170,7 +180,6 @@ const UI = {
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
             
-            // ACTUALLY FIXED: The closing bracket and dot are back!
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
