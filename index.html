@@ -49,20 +49,28 @@
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.35); }
 
-        /* --- THE ZEN SCROLL TASK LIST --- */
+        /* Task List Aesthetics */
         #task-section { width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; }
+        
+        /* Updated Input CSS: Added margin-bottom */
+        #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 0.9rem; padding: 10px 0; margin-bottom: 15px; outline: none; transition: all 0.3s ease; letter-spacing: 0.02em; }
+        #new-task-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
+        #new-task-input:focus { border-bottom: 1px solid rgba(255,255,255,0.2); }
+        body.light-mode #new-task-input { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        body.light-mode #new-task-input::placeholder { color: rgba(0,0,0,0.2); }
+        body.light-mode #new-task-input:focus { border-bottom: 1px solid rgba(0,0,0,0.2); }
+
         #task-list { 
-            list-style: none; padding: 0; margin: 0 0 15px 0; 
-            max-height: 25vh; /* Prevents the layout from stretching */
-            overflow-y: auto; /* Enables invisible scrolling */
-            scrollbar-width: none; /* Hides scrollbar in Firefox */
-            -ms-overflow-style: none; /* Hides scrollbar in IE */
-            /* The Magic Fade: Solid black at top, fading to transparent at the very bottom */
+            list-style: none; padding: 0; margin: 0; 
+            max-height: 25vh; 
+            overflow-y: auto; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
             -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-            padding-bottom: 20px; /* Gives the bottom items room to breathe in the fade */
+            padding-bottom: 20px; 
         }
-        #task-list::-webkit-scrollbar { display: none; /* Hides scrollbar in Chrome/Safari */ }
+        #task-list::-webkit-scrollbar { display: none; }
         
         #task-list li { font-size: 0.95rem; font-weight: 400; opacity: 0.9; transition: all 0.3s ease; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: space-between; min-height: 36px; }
         
@@ -82,13 +90,6 @@
 
         .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.4); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 7px 0; margin-right: 12px; outline: none; letter-spacing: 0.02em; }
         body.light-mode .edit-task-input { border-bottom: 1px solid rgba(0,0,0,0.4); }
-        
-        #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 0.9rem; padding: 10px 0; outline: none; transition: all 0.3s ease; letter-spacing: 0.02em; }
-        #new-task-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
-        #new-task-input:focus { border-bottom: 1px solid rgba(255,255,255,0.2); }
-        body.light-mode #new-task-input { border-bottom: 1px solid rgba(0,0,0,0.05); }
-        body.light-mode #new-task-input::placeholder { color: rgba(0,0,0,0.2); }
-        body.light-mode #new-task-input:focus { border-bottom: 1px solid rgba(0,0,0,0.2); }
         
         #theme-toggle { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: calc(30px + env(safe-area-inset-right, 20px)); border: none; background: none; cursor: pointer; padding: 12px; color: inherit; opacity: 0.25; transition: opacity 0.4s ease; z-index: 100; }
         #theme-toggle:hover { opacity: 0.6; }
@@ -127,8 +128,8 @@
         </div>
 
         <section id="task-section" style="display:none;">
-            <ul id="task-list"></ul>
             <input type="text" id="new-task-input" placeholder="+ add a task..." autocomplete="off">
+            <ul id="task-list"></ul>
         </section>
     </main>
     
