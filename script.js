@@ -170,7 +170,7 @@ const UI = {
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
             
-            // THE FIX IS RIGHT HERE:
+            // ACTUALLY FIXED: The closing bracket and dot are back!
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
