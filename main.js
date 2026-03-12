@@ -32,7 +32,7 @@ const UI = {
         if (!lb) return;
 
         if (show) {
-            const photoUrl = ""; // Replace with your image URL when ready
+            const photoUrl = ""; // Replace with URL when you have one
             if (photoUrl && photoUrl !== "") {
                 img.src = photoUrl;
                 img.style.display = "block";
@@ -41,9 +41,10 @@ const UI = {
                 img.style.display = "none";
                 empty.style.display = "flex";
                 
-                // FIXED: This converts the literal \n from the DB into real line breaks
-                const rawMsg = this.state.noPolaroidMsg || "first photo pending.\nrequirements: you, me, and a camera.";
-                empty.innerText = rawMsg.split('\\n').join('\n');
+                // FIXED: Handles \n and \\n by converting them to HTML line breaks
+                const rawMsg = this.state.noPolaroidMsg || "first photo pending.\n\nrequirements: you, me, and a camera.";
+                const formattedMsg = rawMsg.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                empty.innerHTML = formattedMsg;
             }
             lb.classList.add('open');
             document.body.style.overflow = 'hidden';
@@ -172,7 +173,6 @@ const UI = {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
             
-            // Save the noPolaroidMessage from the database
             this.state.noPolaroidMsg = d.noPolaroidMessage;
 
             if (d.tasks) { 
