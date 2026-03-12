@@ -16,8 +16,23 @@ const UI = {
     
     toggleLightbox(show) {
         const lb = document.getElementById('lightbox');
+        const img = document.getElementById('enlarged-photo');
+        const empty = document.getElementById('enlarged-empty');
         if (!lb) return;
+
         if (show) {
+            // PHOTO CHECK: If you want to show a photo, put the link here.
+            // If this remains empty, it shows the "Option 4" text.
+            const photoUrl = ""; 
+
+            if (photoUrl && photoUrl !== "") {
+                img.src = photoUrl;
+                img.style.display = "block";
+                empty.style.display = "none";
+            } else {
+                img.style.display = "none";
+                empty.style.display = "flex";
+            }
             lb.classList.add('open');
             document.body.style.overflow = 'hidden';
         } else {
