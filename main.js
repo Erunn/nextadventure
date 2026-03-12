@@ -11,7 +11,17 @@ const UI = {
         this.initTasks();
         this.load();
         this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
-        this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll(), { passive: true });
+        
+        let scrollTicking = false;
+        this.dom['task-list']?.addEventListener('scroll', () => {
+            if (!scrollTicking) {
+                window.requestAnimationFrame(() => {
+                    this.checkScroll();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
     },
     
     toggleLightbox(show) {
@@ -22,7 +32,6 @@ const UI = {
 
         if (show) {
             // PHOTO CHECK: If you want to show a photo, put the link here.
-            // If this remains empty, it shows the "Option 4" text.
             const photoUrl = ""; 
 
             if (photoUrl && photoUrl !== "") {
@@ -51,7 +60,12 @@ const UI = {
 
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) { try { this.state.tasks = JSON.parse(stored).filter(t => t); } catch(e) { this.state.tasks = []; } }
+        if (stored) { 
+            try { 
+                const data = JSON.parse(stored);
+                this.state.tasks = Array.isArray(data) ? data.filter(t => t) : []; 
+            } catch(e) { this.state.tasks = []; } 
+        }
         this.renderTasks();
         this.dom['new-task-input']?.addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
@@ -65,7 +79,12 @@ const UI = {
     async syncTasks() {
         localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
         this.renderTasks();
-        try { await fetch(`${this.config.DB_BASE}/tasks.json`, { method: 'PUT', body: JSON.stringify(this.state.tasks) }); } catch (e) { console.error(e); }
+        try { 
+            await fetch(`${this.config.DB_BASE}/tasks.json`, { 
+                method: 'PUT', 
+                body: JSON.stringify(this.state.tasks) 
+            }); 
+        } catch (e) { console.error("Sync failed", e); }
     },
     
     renderTasks() {
@@ -149,7 +168,11 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
-            if (d.tasks) { this.state.tasks = Array.isArray(d.tasks) ? d.tasks : Object.values(d.tasks); this.renderTasks(); }
+            if (d.tasks) { 
+                const rawTasks = Array.isArray(d.tasks) ? d.tasks : Object.values(d.tasks);
+                this.state.tasks = rawTasks.filter(t => t); 
+                this.renderTasks(); 
+            }
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = (d.eventName || "next adventure") + (em ? ` <span>${em}</span>` : "");
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
