@@ -1,5 +1,5 @@
-const CACHE_NAME = 'adventure-v-zen-lock';
-const ASSETS = ['/', '/index.html', '/script.js?v=locked_down', '/manifest.json'];
+const CACHE_NAME = 'adventure-2026-v1'; // Bumping name forces cache to reset
+const ASSETS = ['/', '/index.html', '/script.js?v=2026_FINAL', '/manifest.json'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
