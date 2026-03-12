@@ -36,8 +36,8 @@
         .timer-container { position: relative; text-align: center; width: 90%; max-width: 480px; z-index: 10; display: flex; flex-direction: column; align-items: center; min-height: 100dvh; justify-content: center; padding-top: 100px; padding-bottom: 60px; }
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0; text-transform: lowercase; }
 
-        /* HEADER POLAROIDS */
-        .polaroid-header { position: absolute; top: 0; left: 0; right: 0; margin: 0 auto; width: 85%; max-width: 340px; cursor: pointer; z-index: 15; display: flex; justify-content: center; padding-top: env(safe-area-inset-top); }
+        /* HEADER POLAROIDS: Centered & Connected to Top */
+        .polaroid-header { position: absolute; top: 0; left: 0; right: 0; margin: 0 auto; width: 85%; max-width: 340px; cursor: pointer; z-index: 15; display: flex; justify-content: center; }
         .polaroid-header img { width: 100%; height: auto; display: block; margin-top: -1px; }
         @media (min-width: 1024px) { .polaroid-header { max-width: 420px; } }
         @media (max-width: 600px) { .polaroid-header { max-width: 260px; } }
@@ -51,7 +51,6 @@
         .time-box span.is-due { opacity: 0.1 !important; }
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 12px; opacity: 0.3; font-weight: 500; }
 
-        /* TASKS */
         #task-section { position: relative; width: 100%; max-width: 420px; margin-top: 20px; text-align: left; }
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 12px 0; transition: border 0.3s; }
         #new-task-input:focus { border-bottom: 1px solid rgba(128,128,128,0.2); }
@@ -70,7 +69,19 @@
         @media (hover: none) { .task-actions { opacity: 0.5; } }
         .action-btn { background: transparent; border: none; color: inherit; padding: 6px; cursor: pointer; display: flex; align-items: center; opacity: 0.3; transition: all 0.2s; }
         .action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
-        .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--accent); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 4px 0; outline: none; }
+
+        /* LIGHTBOX: Polished Polaroid Frame */
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 17, 21, 0.98); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 10000; padding: 20px; backdrop-filter: blur(8px); }
+        #lightbox.open { opacity: 1; pointer-events: auto; }
+        .polaroid-frame { background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%); padding: 15px 15px 60px 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); transform: scale(0.9) rotate(-2deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 90%; max-height: 80vh; display: flex; flex-direction: column; }
+        #lightbox.open .polaroid-frame { transform: scale(1) rotate(0deg); }
+        .polaroid-empty { 
+            width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; 
+            padding: 40px; color: #4a5568; font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.5; font-weight: 400; 
+            border: 1px inset rgba(0,0,0,0.03);
+            white-space: pre-line; /* Essential for DB \n breaks */
+        }
+        @media (max-width: 600px) { .polaroid-empty { width: 260px; height: 260px; font-size: 1rem; } }
 
         /* SURI & THEME */
         #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -78,27 +89,13 @@
         .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; image-rendering: -webkit-optimize-contrast; -webkit-mask-image: radial-gradient(circle at center, black 80%, transparent 100%); }
         #theme-toggle { position: fixed; bottom: 30px; right: 30px; border: none; background: none; opacity: 0.3; cursor: pointer; color: inherit; z-index: 100; padding: 10px; }
         #theme-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
-
-        /* LIGHTBOX - POLISHED */
-        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 17, 21, 0.98); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 10000; padding: 20px; backdrop-filter: blur(8px); }
-        #lightbox.open { opacity: 1; pointer-events: auto; }
-        .polaroid-frame { 
-            background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%); 
-            padding: 15px 15px 60px 15px; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
-            transform: scale(0.9) rotate(-2deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            max-width: 90%; max-height: 80vh; display: flex; flex-direction: column; 
-        }
-        #lightbox.open .polaroid-frame { transform: scale(1) rotate(0deg); }
-        .polaroid-empty { width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; color: #4a5568; font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.5; font-weight: 400; border: 1px inset rgba(0,0,0,0.03); }
-        @media (max-width: 600px) { .polaroid-empty { width: 260px; height: 260px; font-size: 1rem; } }
         
         #scroll-indicator { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; display: flex; justify-content: center; }
         #scroll-indicator svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
         #scroll-indicator.visible { opacity: 0.5; animation: bounce 2.5s infinite ease-in-out; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translate(-50%, 0);} 40% {transform: translate(-50%, -6px);} 60% {transform: translate(-50%, -3px);} }
         .hidden-v { opacity: 0 !important; pointer-events: none; }
-        
+
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
         .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
@@ -123,8 +120,8 @@
     <div id="cat-perch" class="sync-reveal"></div> 
     
     <button id="theme-toggle" class="sync-reveal">
-        <svg id="sun-icon" style="display:none;" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moon-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg id="sun-icon" style="display:none;" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
     
     <main class="timer-container sync-reveal">
@@ -143,7 +140,7 @@
             <input type="text" id="new-task-input" placeholder="I would love to..." autocomplete="off">
             <div class="list-container">
                 <ul id="task-list"></ul>
-                <div id="scroll-indicator"><svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                <div id="scroll-indicator"><svg viewBox="0 0 24 24" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
             </div>
         </section>
     </main>
