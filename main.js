@@ -29,12 +29,12 @@ const UI = {
         const empty = document.getElementById('enlarged-empty');
         if (!lb) return;
         if (show) {
-            const photoUrl = ""; 
+            const photoUrl = ""; // Replace with your URL when ready
             if (photoUrl && photoUrl !== "") {
                 img.src = photoUrl; img.style.display = "block"; empty.style.display = "none";
             } else {
                 img.style.display = "none"; empty.style.display = "flex";
-                empty.innerText = this.state.noPolaroidMsg || "Memory pending... ❤️";
+                empty.innerText = this.state.noPolaroidMsg || "first photo pending. requirements: you, me, and a camera.";
             }
             lb.classList.add('open');
             document.body.style.overflow = 'hidden';
