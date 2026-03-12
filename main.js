@@ -28,19 +28,12 @@ const UI = {
         const img = document.getElementById('enlarged-photo');
         const empty = document.getElementById('enlarged-empty');
         if (!lb) return;
-
         if (show) {
-            // Logic: Check for a photo URL (you can also put this in DB if you want)
             const photoUrl = ""; 
-
             if (photoUrl && photoUrl !== "") {
-                img.src = photoUrl;
-                img.style.display = "block";
-                empty.style.display = "none";
+                img.src = photoUrl; img.style.display = "block"; empty.style.display = "none";
             } else {
-                img.style.display = "none";
-                empty.style.display = "flex";
-                // Show the message from the DB
+                img.style.display = "none"; empty.style.display = "flex";
                 empty.innerText = this.state.noPolaroidMsg || "Memory pending... ❤️";
             }
             lb.classList.add('open');
@@ -61,13 +54,12 @@ const UI = {
 
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) { try { this.state.tasks = JSON.parse(stored).filter(t => t); } catch(e) { this.state.tasks = []; } }
+        if (stored) { try { const data = JSON.parse(stored); this.state.tasks = Array.isArray(data) ? data.filter(t => t) : []; } catch(e) { this.state.tasks = []; } }
         this.renderTasks();
         this.dom['new-task-input']?.addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
                 this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
-                e.target.value = '';
-                this.syncTasks(); 
+                e.target.value = ''; this.syncTasks(); 
             }
         });
     },
@@ -85,18 +77,13 @@ const UI = {
         sorted.forEach(t => {
             const li = document.createElement('li');
             if (t.done) li.classList.add('done');
-            const txt = document.createElement('span');
-            txt.className = 'task-text';
-            txt.innerText = t.text;
+            const txt = document.createElement('span'); txt.className = 'task-text'; txt.innerText = t.text;
             txt.onclick = () => { t.done = !t.done; this.syncTasks(); };
-            const acts = document.createElement('div');
-            acts.className = 'task-actions';
-            const edit = document.createElement('button');
-            edit.className = 'action-btn';
+            const acts = document.createElement('div'); acts.className = 'task-actions';
+            const edit = document.createElement('button'); edit.className = 'action-btn';
             edit.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             edit.onclick = (e) => { e.stopPropagation(); this.enterEditMode(li, t); };
-            const del = document.createElement('button');
-            del.className = 'action-btn';
+            const del = document.createElement('button'); del.className = 'action-btn';
             del.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             del.onclick = (e) => { e.stopPropagation(); this.state.tasks = this.state.tasks.filter(x => x.id !== t.id); this.syncTasks(); };
             acts.append(edit, del); li.append(txt, acts); frag.appendChild(li);
@@ -107,21 +94,12 @@ const UI = {
 
     enterEditMode(li, task) {
         li.innerHTML = '';
-        const input = document.createElement('input');
-        input.className = 'edit-task-input';
-        input.value = task.text;
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'action-btn';
+        const input = document.createElement('input'); input.className = 'edit-task-input'; input.value = task.text;
+        const saveBtn = document.createElement('button'); saveBtn.className = 'action-btn';
         saveBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        const save = () => {
-            const val = input.value.trim();
-            if (val) { const t = this.state.tasks.find(x => x.id === task.id); if (t) t.text = val; this.syncTasks(); } 
-            else { this.renderTasks(); }
-        };
-        input.onkeypress = (e) => { if (e.key === 'Enter') save(); };
-        saveBtn.onclick = save;
-        li.append(input, saveBtn);
-        setTimeout(() => input.focus(), 50);
+        const save = () => { const val = input.value.trim(); if (val) { const t = this.state.tasks.find(x => x.id === task.id); if (t) t.text = val; this.syncTasks(); } else { this.renderTasks(); } };
+        input.onkeypress = (e) => { if (e.key === 'Enter') save(); }; saveBtn.onclick = save;
+        li.append(input, saveBtn); setTimeout(() => input.focus(), 50);
     },
 
     renderSuri() {
@@ -137,8 +115,7 @@ const UI = {
         this.updIcons(isL);
         this.dom['theme-toggle'].onclick = () => {
             const l = document.body.classList.toggle('light-mode');
-            localStorage.setItem('th', l ? 'l' : 'd');
-            this.updIcons(l);
+            localStorage.setItem('th', l ? 'l' : 'd'); this.updIcons(l);
         };
     },
 
@@ -152,15 +129,8 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
-            
-            // SAVE THE DB PARAMETER
             this.state.noPolaroidMsg = d.noPolaroidMessage;
-
-            if (d.tasks) { 
-                const rawTasks = Array.isArray(d.tasks) ? d.tasks : Object.values(d.tasks);
-                this.state.tasks = rawTasks.filter(t => t); 
-                this.renderTasks(); 
-            }
+            if (d.tasks) { const rawTasks = Array.isArray(d.tasks) ? d.tasks : Object.values(d.tasks); this.state.tasks = rawTasks.filter(t => t); this.renderTasks(); }
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = (d.eventName || "next adventure") + (em ? ` <span>${em}</span>` : "");
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
