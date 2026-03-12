@@ -15,7 +15,6 @@ const UI = {
         if (this.dom['cat-perch']) {
             this.dom['cat-perch'].addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
         }
-        
         this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll());
     },
     
@@ -118,7 +117,6 @@ const UI = {
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
 
             if (Number(d.useTimer) === 1) {
-                // Pass the celebration message into the timer function
                 this.runTimer(d.targetDate, d.celebrationMessage);
             } else {
                 this.showStatic(d.noTimerMessage);
@@ -133,13 +131,12 @@ const UI = {
         
         if (this.dom['full-date-display']) {
             this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            this.dom['full-date-display'].style.display = "block";
+            this.dom['full-date-display'].classList.remove('hidden-v');
         }
         
         const tick = () => {
             const diff = target - Date.now();
             
-            // ACHIEVED: Show celebration message when achieved
             if (diff <= 0) return this.showStatic(celebrationMsg || "Time's up!");
 
             const vals = { 
@@ -152,8 +149,6 @@ const UI = {
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
-                    
-                    // FIXED: Disable units (opacity) if they are zero
                     if (u === 'days') {
                         this.dom[u].classList.toggle('is-due', vals.days === 0);
                     } else if (u === 'hours') {
@@ -164,7 +159,7 @@ const UI = {
                 }
             });
 
-            if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
+            if (this.dom['countdown']) this.dom['countdown'].classList.remove('hidden-v');
             this.reveal();
         };
         tick(); this.state.timer = setInterval(tick, 1000);
@@ -172,11 +167,15 @@ const UI = {
 
     showStatic(m) {
         if (this.state.timer) clearInterval(this.state.timer);
-        if (this.dom['countdown']) this.dom['countdown'].style.display = "none";
-        if (this.dom['full-date-display']) this.dom['full-date-display'].style.display = "none";
+        
+        // Use opacity swap instead of display:none
+        this.dom['countdown']?.classList.add('hidden-v');
+        this.dom['full-date-display']?.classList.add('hidden-v');
+        
         if (this.dom['description-display']) { 
-            this.dom['description-display'].style.display = "block"; 
+            this.dom['description-display'].classList.remove('hidden-v');
             this.dom['description-display'].innerText = m || ""; 
+            this.dom['description-display'].style.opacity = "0.5";
         }
         this.reveal();
     },
