@@ -4,7 +4,7 @@ const UI = {
     dom: {}, 
     
     init() {
-        const ids = ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input'];
+        const ids = ['event-name', 'full-date-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input', 'scroll-indicator'];
         ids.forEach(id => this.dom[id] = document.getElementById(id));
 
         this.renderSuri();
@@ -13,25 +13,28 @@ const UI = {
         this.load();
         
         if (this.dom['cat-perch']) {
-            this.dom['cat-perch'].addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                this.renderSuri();
-            });
+            this.dom['cat-perch'].addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
         }
+        
+        this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll());
     },
     
+    checkScroll() {
+        const el = this.dom['task-list'];
+        const ind = this.dom['scroll-indicator'];
+        if (!el || !ind) return;
+        const hasMore = el.scrollHeight > el.clientHeight && (el.scrollHeight - el.scrollTop - el.clientHeight > 10);
+        ind.classList.toggle('visible', hasMore);
+    },
+
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) {
-            try { this.state.tasks = JSON.parse(stored).filter(t => t); } 
-            catch (e) { this.state.tasks = []; }
-        }
+        if (stored) this.state.tasks = JSON.parse(stored).filter(t => t);
         this.renderTasks();
 
         this.dom['new-task-input']?.addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
-                const newTask = { id: Date.now(), text: e.target.value.trim(), done: false };
-                this.state.tasks.push(newTask);
+                this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
                 e.target.value = '';
                 this.syncTasks(); 
             }
@@ -46,51 +49,13 @@ const UI = {
                 method: 'PUT',
                 body: JSON.stringify(this.state.tasks)
             });
-        } catch (e) { console.error("Sync error:", e); }
-    },
-    
-    toggleTask(id) {
-        const t = this.state.tasks.find(x => x.id === id);
-        if (t) { t.done = !t.done; this.syncTasks(); }
-    },
-
-    deleteTask(id) {
-        this.state.tasks = this.state.tasks.filter(x => x.id !== id);
-        this.syncTasks();
-    },
-
-    updateTask(id, text) {
-        const t = this.state.tasks.find(x => x.id === id);
-        if (t && text.trim()) { t.text = text.trim(); this.syncTasks(); }
-        else this.renderTasks();
-    },
-
-    enterEditMode(li, task) {
-        li.innerHTML = '';
-        const input = document.createElement('input');
-        input.className = 'edit-task-input';
-        input.value = task.text;
-        
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'action-btn';
-        saveBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-
-        const save = () => this.updateTask(task.id, input.value);
-        input.onkeypress = (e) => { if (e.key === 'Enter') save(); };
-        saveBtn.onclick = save;
-
-        li.append(input, saveBtn);
-        setTimeout(() => input.focus(), 50);
+        } catch (e) { console.error(e); }
     },
     
     renderTasks() {
         if (!this.dom['task-list']) return;
         const frag = document.createDocumentFragment();
-        
-        const sorted = [...this.state.tasks].sort((a, b) => {
-            if (a.done === b.done) return b.id - a.id; 
-            return a.done ? 1 : -1;
-        });
+        const sorted = [...this.state.tasks].sort((a, b) => (a.done === b.done) ? b.id - a.id : a.done ? 1 : -1);
 
         sorted.forEach(t => {
             const li = document.createElement('li');
@@ -99,26 +64,18 @@ const UI = {
             const txt = document.createElement('span');
             txt.className = 'task-text';
             txt.innerText = t.text;
-            txt.onclick = () => this.toggleTask(t.id);
+            txt.onclick = () => { t.done = !t.done; this.syncTasks(); };
             
-            const acts = document.createElement('div');
-            acts.className = 'task-actions';
-
-            const edit = document.createElement('button');
-            edit.className = 'action-btn';
-            edit.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-            edit.onclick = (e) => { e.stopPropagation(); this.enterEditMode(li, t); };
-
             const del = document.createElement('button');
             del.className = 'action-btn';
             del.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-            del.onclick = (e) => { e.stopPropagation(); this.deleteTask(t.id); };
+            del.onclick = (e) => { e.stopPropagation(); this.state.tasks = this.state.tasks.filter(x => x.id !== t.id); this.syncTasks(); };
 
-            acts.append(edit, del);
-            li.append(txt, acts);
+            li.append(txt, del);
             frag.appendChild(li);
         });
         this.dom['task-list'].replaceChildren(frag);
+        setTimeout(() => this.checkScroll(), 50);
     },
 
     renderSuri() {
@@ -156,44 +113,30 @@ const UI = {
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = d.eventName + (em ? ` <span>${em}</span>` : "");
             if (Number(d.useTimer) === 1) this.runTimer(d.targetDate, d.celebrationMessage);
-            else this.showStatic(d.noTimerMessage);
-        } catch (e) { this.showStatic("next adventure"); }
+            else this.reveal();
+        } catch (e) { this.reveal(); }
     },
 
     runTimer(str, msg) {
         const p = str.match(/\d+/g);
-        if (!p || p.length < 3) return this.showStatic(msg);
+        if (!p || p.length < 3) return this.reveal();
         const target = new Date(p[0].length===4?p[0]:(p[2].length===2?"20"+p[2]:p[2]), p[1]-1, p[0].length===4?p[2]:p[0], p[3]||0, p[4]||0, p[5]||0).getTime();
-        
-        if (this.dom['full-date-display']) {
-            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            this.dom['full-date-display'].style.display = "block";
-        }
         
         const tick = () => {
             const diff = target - Date.now();
-            if (diff <= 0) return this.showStatic(msg);
+            if (diff <= 0) return;
             const vals = { days: Math.floor(diff/864e5), hours: Math.floor((diff%864e5)/36e5), minutes: Math.floor((diff%36e5)/6e4), seconds: Math.floor((diff%6e4)/1e3) };
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
-                    if (u !== 'seconds') this.dom[u].classList.toggle('is-due', (u==='days'&&vals.days===0)||(u==='hours'&&vals.days===0&&vals.hours===0)||(u==='minutes'&&vals.days===0&&vals.hours===0&&vals.minutes===0));
+                    if (u !== 'seconds') this.dom[u].classList.toggle('is-due', (u==='days'&&vals.days===0)||(u==='hours'&&vals.days===0&&vals.hours===0));
                 }
             });
             if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
             this.reveal();
         };
-        tick(); this.state.timer = setInterval(tick, 1000);
-    },
-
-    showStatic(m) {
-        if (this.state.timer) clearInterval(this.state.timer);
-        this.dom['countdown'].style.display = "none";
-        this.dom['full-date-display'].style.display = "none";
-        if (this.dom['description-display']) { this.dom['description-display'].style.display = "block"; this.dom['description-display'].innerText = m; }
-        if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
-        this.reveal();
+        tick(); setInterval(tick, 1000);
     },
 
     reveal() {
