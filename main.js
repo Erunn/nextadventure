@@ -13,7 +13,6 @@ const UI = {
         this.load();
         
         this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
-        // Use passive scroll listener for better mobile performance
         this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll(), { passive: true });
     },
     
@@ -27,7 +26,10 @@ const UI = {
 
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) this.state.tasks = JSON.parse(stored).filter(t => t);
+        if (stored) {
+            try { this.state.tasks = JSON.parse(stored).filter(t => t); } 
+            catch(e) { this.state.tasks = []; }
+        }
         this.renderTasks();
 
         this.dom['new-task-input']?.addEventListener('keypress', e => {
@@ -64,17 +66,52 @@ const UI = {
             txt.innerText = t.text;
             txt.onclick = () => { t.done = !t.done; this.syncTasks(); };
             
+            const acts = document.createElement('div');
+            acts.className = 'task-actions';
+
+            // Edit Button
+            const edit = document.createElement('button');
+            edit.className = 'action-btn';
+            edit.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+            edit.onclick = (e) => { e.stopPropagation(); this.enterEditMode(li, t); };
+
+            // Delete Button
             const del = document.createElement('button');
             del.className = 'action-btn';
-            del.ariaLabel = "Delete task";
             del.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             del.onclick = (e) => { e.stopPropagation(); this.state.tasks = this.state.tasks.filter(x => x.id !== t.id); this.syncTasks(); };
 
-            li.append(txt, del);
+            acts.append(edit, del);
+            li.append(txt, acts);
             frag.appendChild(li);
         });
         this.dom['task-list'].replaceChildren(frag);
         setTimeout(() => this.checkScroll(), 150);
+    },
+
+    enterEditMode(li, task) {
+        li.innerHTML = '';
+        const input = document.createElement('input');
+        input.className = 'edit-task-input';
+        input.value = task.text;
+        
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-btn';
+        saveBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+        const save = () => {
+            const val = input.value.trim();
+            if (val) {
+                const t = this.state.tasks.find(x => x.id === task.id);
+                if (t) t.text = val;
+                this.syncTasks();
+            } else { this.renderTasks(); }
+        };
+
+        input.onkeypress = (e) => { if (e.key === 'Enter') save(); };
+        saveBtn.onclick = save;
+        li.append(input, saveBtn);
+        setTimeout(() => input.focus(), 50);
     },
 
     renderSuri() {
