@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0f1115">
     
     <script>
-        // Self-destruct for zombie Service Workers
+        // Force unregister service workers to enable pull-to-refresh
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(regs => {
                 for(let r of regs) r.unregister();
@@ -60,6 +60,7 @@
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0; text-transform: lowercase; }
         h1 span { font-size: 0.8em; margin-left: 8px; }
 
+        /* THE STABLE SLOT: Equal spacing for Date or Celebration Message */
         .message-slot {
             position: relative;
             width: 100%;
@@ -104,6 +105,7 @@
             list-style: none; padding: 0; margin: 0; 
             max-height: 25vh; overflow-y: auto; scrollbar-width: none; 
             -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
         }
         #task-list::-webkit-scrollbar { display: none; }
         #task-list li { 
@@ -119,9 +121,15 @@
         li.done .task-text { text-decoration: line-through; opacity: 0.3; }
         li.done .task-text::before { content: '●'; opacity: 0.8; }
         
+        .task-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+        #task-list li:hover .task-actions { opacity: 1; }
+        @media (hover: none) { .task-actions { opacity: 0.5; } }
+        
         .action-btn { background: transparent; border: none; color: inherit; padding: 8px; cursor: pointer; display: flex; align-items: center; opacity: 0.3; transition: opacity 0.2s; }
         .action-btn:hover { opacity: 1; }
         .action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+
+        .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--accent); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 4px 0; outline: none; }
 
         #scroll-indicator {
             position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
