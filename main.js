@@ -6,12 +6,10 @@ const UI = {
     init() {
         const ids = ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input', 'scroll-indicator'];
         ids.forEach(id => this.dom[id] = document.getElementById(id));
-
         this.renderSuri();
         this.initTheme();
         this.initTasks();
         this.load();
-        
         this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
         this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll(), { passive: true });
     },
@@ -26,12 +24,8 @@ const UI = {
 
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) {
-            try { this.state.tasks = JSON.parse(stored).filter(t => t); } 
-            catch(e) { this.state.tasks = []; }
-        }
+        if (stored) { try { this.state.tasks = JSON.parse(stored).filter(t => t); } catch(e) { this.state.tasks = []; } }
         this.renderTasks();
-
         this.dom['new-task-input']?.addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
                 this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
@@ -44,12 +38,7 @@ const UI = {
     async syncTasks() {
         localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
         this.renderTasks();
-        try {
-            await fetch(`${this.config.DB_BASE}/tasks.json`, {
-                method: 'PUT',
-                body: JSON.stringify(this.state.tasks)
-            });
-        } catch (e) { console.error(e); }
+        try { await fetch(`${this.config.DB_BASE}/tasks.json`, { method: 'PUT', body: JSON.stringify(this.state.tasks) }); } catch (e) { console.error(e); }
     },
     
     renderTasks() {
@@ -60,7 +49,6 @@ const UI = {
         sorted.forEach(t => {
             const li = document.createElement('li');
             if (t.done) li.classList.add('done');
-            
             const txt = document.createElement('span');
             txt.className = 'task-text';
             txt.innerText = t.text;
@@ -69,13 +57,11 @@ const UI = {
             const acts = document.createElement('div');
             acts.className = 'task-actions';
 
-            // Edit Button
             const edit = document.createElement('button');
             edit.className = 'action-btn';
             edit.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             edit.onclick = (e) => { e.stopPropagation(); this.enterEditMode(li, t); };
 
-            // Delete Button
             const del = document.createElement('button');
             del.className = 'action-btn';
             del.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
@@ -94,20 +80,14 @@ const UI = {
         const input = document.createElement('input');
         input.className = 'edit-task-input';
         input.value = task.text;
-        
         const saveBtn = document.createElement('button');
         saveBtn.className = 'action-btn';
         saveBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-
         const save = () => {
             const val = input.value.trim();
-            if (val) {
-                const t = this.state.tasks.find(x => x.id === task.id);
-                if (t) t.text = val;
-                this.syncTasks();
-            } else { this.renderTasks(); }
+            if (val) { const t = this.state.tasks.find(x => x.id === task.id); if (t) t.text = val; this.syncTasks(); } 
+            else { this.renderTasks(); }
         };
-
         input.onkeypress = (e) => { if (e.key === 'Enter') save(); };
         saveBtn.onclick = save;
         li.append(input, saveBtn);
@@ -142,22 +122,12 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
-            
-            if (d.tasks) {
-                this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks);
-                this.renderTasks();
-            }
-
+            if (d.tasks) { this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks); this.renderTasks(); }
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = (d.eventName || "next adventure") + (em ? ` <span>${em}</span>` : "");
-            
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
-
-            if (Number(d.useTimer) === 1) {
-                this.runTimer(d.targetDate, d.celebrationMessage);
-            } else {
-                this.showStatic(d.noTimerMessage);
-            }
+            if (Number(d.useTimer) === 1) { this.runTimer(d.targetDate, d.celebrationMessage); } 
+            else { this.showStatic(d.noTimerMessage); }
         } catch (e) { this.reveal(); }
     },
 
@@ -165,23 +135,11 @@ const UI = {
         const p = str.match(/\d+/g);
         if (!p || p.length < 3) return this.showStatic(celebrationMsg);
         const target = new Date(p[0].length===4?p[0]:(p[2].length===2?"20"+p[2]:p[2]), p[1]-1, p[0].length===4?p[2]:p[0], p[3]||0, p[4]||0, p[5]||0).getTime();
-        
-        if (this.dom['full-date-display']) {
-            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            this.dom['full-date-display'].classList.remove('hidden-v');
-        }
-        
+        if (this.dom['full-date-display']) { this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); this.dom['full-date-display'].classList.remove('hidden-v'); }
         const tick = () => {
             const diff = target - Date.now();
             if (diff <= 0) return this.showStatic(celebrationMsg || "Time's up!");
-
-            const vals = { 
-                days: Math.floor(diff/864e5), 
-                hours: Math.floor((diff%864e5)/36e5), 
-                minutes: Math.floor((diff%36e5)/6e4), 
-                seconds: Math.floor((diff%6e4)/1e3) 
-            };
-
+            const vals = { days: Math.floor(diff/864e5), hours: Math.floor((diff%864e5)/36e5), minutes: Math.floor((diff%36e5)/6e4), seconds: Math.floor((diff%6e4)/1e3) };
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
@@ -190,7 +148,6 @@ const UI = {
                     else if (u === 'minutes') this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0 && vals.minutes === 0);
                 }
             });
-
             if (this.dom['countdown']) this.dom['countdown'].classList.remove('hidden-v');
             this.reveal();
         };
@@ -201,11 +158,7 @@ const UI = {
         if (this.state.timer) clearInterval(this.state.timer);
         this.dom['countdown']?.classList.add('hidden-v');
         this.dom['full-date-display']?.classList.add('hidden-v');
-        if (this.dom['description-display']) { 
-            this.dom['description-display'].classList.remove('hidden-v');
-            this.dom['description-display'].innerText = m || ""; 
-            this.dom['description-display'].style.opacity = "0.5";
-        }
+        if (this.dom['description-display']) { this.dom['description-display'].classList.remove('hidden-v'); this.dom['description-display'].innerText = m || ""; this.dom['description-display'].style.opacity = "0.5"; }
         this.reveal();
     },
 
